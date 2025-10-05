@@ -17,6 +17,9 @@ export default function Home() {
               <a href="#features" className="text-gray-700 hover:text-primary transition">
                 Features
               </a>
+              <a href="/marketplace" className="text-gray-700 hover:text-primary transition">
+                Marketplace
+              </a>
               <a href="#about" className="text-gray-700 hover:text-primary transition">
                 About
               </a>

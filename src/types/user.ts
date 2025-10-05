@@ -1,17 +1,5 @@
 export type UserRole = 'farmer' | 'student' | 'buyer' | 'admin';
 
-export interface FarmerVerification {
-  status: 'pending' | 'verified' | 'rejected';
-  submittedAt?: Date;
-  verifiedAt?: Date;
-  documents?: {
-    idDocument?: string;
-    farmPhotos?: string[];
-    landOwnership?: string;
-  };
-  rejectionReason?: string;
-}
-
 export interface User {
   id: string;
   email: string;
@@ -25,8 +13,11 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   
-  // Farmer-specific fields
-  farmerVerification?: FarmerVerification;
+  // Email verification (replaces document-based verification)
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
+  verifiedAt?: Date;
   
   // Student-specific fields
   enrolledCourses?: string[];
@@ -37,6 +28,26 @@ export interface User {
   avatar?: string;
 }
 
+export type CropStatus = 'available' | 'sold' | 'pending';
+
+export interface CropListing {
+  id: string;
+  farmerId: string;
+  farmerName: string;
+  cropName: string;
+  quantity: number;
+  unit: string; // e.g., 'bags', 'kg', 'tonnes'
+  pricePerUnit: number;
+  description: string;
+  location: string; // Kenyan county
+  datePosted: Date;
+  status: CropStatus;
+  image: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Database {
   users: User[];
+  cropListings: CropListing[];
 }

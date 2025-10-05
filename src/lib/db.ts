@@ -18,7 +18,7 @@ export async function getDb(): Promise<Low<Database>> {
   
   // Initialize with default data if empty
   if (!db.data) {
-    db.data = { users: [] };
+    db.data = { users: [], cropListings: [] };
     await db.write();
   }
   

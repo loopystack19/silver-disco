@@ -60,6 +60,11 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate verification token
+    const verificationToken = uuidv4();
+    const verificationTokenExpiry = new Date();
+    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + 24); // 24 hours expiry
+
     // Create new user
     const newUser: User = {
       id: uuidv4(),
@@ -70,17 +75,14 @@ export async function POST(request: NextRequest) {
       phone: phone || undefined,
       location: location || undefined,
       skills: [],
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpiry,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     // Add role-specific fields
-    if (role === 'farmer') {
-      newUser.farmerVerification = {
-        status: 'pending',
-      };
-    }
-
     if (role === 'student') {
       newUser.enrolledCourses = [];
       newUser.completedCourses = [];
