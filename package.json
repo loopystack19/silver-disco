@@ -21,15 +21,21 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "lowdb": "^7.0.1",
     "next": "^15.5.4",
+    "next-auth": "^4.24.11",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.14",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^24.6.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.37.0",
     "eslint-config-next": "^15.5.4",

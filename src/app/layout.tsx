@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
+import SessionProvider from "@/components/providers/SessionProvider";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -39,7 +40,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${poppins.variable} ${inter.variable}`}>
-      <body className="min-h-screen">{children}</body>
+      <body className="min-h-screen">
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   );
 }
