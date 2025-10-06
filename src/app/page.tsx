@@ -37,51 +37,53 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/landing/hero.jpg"
-            alt="African farmers working in field"
-            fill
-            className="object-cover"
-            priority
-            quality={90}
-          />
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/50"></div>
-        </div>
+      <section className="min-h-screen flex items-center bg-white">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 min-h-screen items-center">
+            {/* Left Side - Image */}
+            <div className="flex items-center justify-center px-6 py-8 md:py-0 order-1 md:order-1">
+              <div className="relative w-full max-h-[600px] h-[50vh] md:h-[600px] rounded-2xl overflow-hidden shadow-lg">
+                <Image
+                  src="/images/landing/hero.jpg"
+                  alt="African farmers working in field"
+                  fill
+                  className="object-cover brightness-100"
+                  priority
+                  quality={95}
+                />
+              </div>
+            </div>
 
-        {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 text-center text-white">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            Empowering Farmers, Learners,<br />and Job Seekers Across Africa
-          </h1>
-          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed">
-            UmojaHub connects people to opportunities that drive food security, education, and employment.
-          </p>
+            {/* Right Side - Content */}
+            <div className="flex items-center justify-center px-8 py-12 md:py-16 order-2 md:order-2">
+              <div className="max-w-xl space-y-6">
+                {/* Heading */}
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-neutral-800 leading-tight">
+                  Empowering Farmers, Learners, and Job Seekers Across Africa
+                </h1>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={() => router.push('/register')}
-              className="group px-8 py-4 bg-green-600 hover:bg-green-700 text-white text-lg font-semibold rounded-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center gap-2"
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button
-              onClick={() => scrollToSection('farmers-hub')}
-              className="px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white text-lg font-semibold rounded-lg transition-all border-2 border-white/50 flex items-center gap-2"
-            >
-              Explore Platform
-            </button>
-          </div>
+                {/* Subheading */}
+                <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
+                  UmojaHub connects people to opportunities that drive food security, education, and employment.
+                </p>
 
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="w-6 h-10 rounded-full border-2 border-white/50 flex items-start justify-center p-2">
-              <div className="w-1 h-3 bg-white rounded-full animate-pulse"></div>
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                  <button
+                    onClick={() => router.push('/register')}
+                    className="group px-8 py-4 bg-[#16a34a] hover:bg-[#15803d] text-white text-lg font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    Get Started
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('farmers-hub')}
+                    className="px-8 py-4 bg-white hover:bg-gray-50 text-gray-800 text-lg font-semibold rounded-lg transition-all duration-200 border-2 border-gray-400 hover:border-gray-500 flex items-center justify-center gap-2 transform hover:scale-105"
+                  >
+                    Explore Platform
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
