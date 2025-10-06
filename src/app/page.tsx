@@ -16,7 +16,7 @@ export default function LandingPage() {
       // @ts-ignore
       const role = session.user.role;
       if (role === 'farmer') {
-        router.push('/dashboard/farmers/marketplace');
+        router.push('/dashboard/farmers');
       } else if (role === 'student') {
         router.push('/dashboard/students');
       } else if (role === 'learner') {
@@ -133,7 +133,7 @@ export default function LandingPage() {
               </div>
 
               <button
-                onClick={() => router.push('/dashboard/farmers/marketplace')}
+                onClick={() => router.push('/marketplace')}
                 className="group px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
               >
                 Visit Marketplace
@@ -336,7 +336,7 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <button
-                    onClick={() => router.push('/dashboard/farmers/marketplace')}
+                    onClick={() => router.push('/marketplace')}
                     className="text-gray-400 hover:text-white transition"
                   >
                     Marketplace
@@ -367,7 +367,7 @@ export default function LandingPage() {
               <ul className="space-y-2 text-sm">
                 <li>
                   <button
-                    onClick={() => router.push('/dashboard/farmers/marketplace')}
+                    onClick={() => router.push('/marketplace')}
                     className="text-gray-400 hover:text-white transition"
                   >
                     For Farmers

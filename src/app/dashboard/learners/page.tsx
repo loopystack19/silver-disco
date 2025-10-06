@@ -1,8 +1,8 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Bookmark, Calendar, Download, Share2, Sparkles, Target, Check, ArrowLeft } from 'lucide-react';
+import { BookOpen, Bookmark, Calendar, Download, Share2, Sparkles, Target, Check, ArrowLeft, LogOut } from 'lucide-react';
 import { useState } from 'react';
 
 export default function LearnersPage() {
@@ -11,44 +11,51 @@ export default function LearnersPage() {
   const [activeTab, setActiveTab] = useState<'roadmap' | 'ai-tutor'>('roadmap');
 
   const relatedRoadmaps = [
-    { name: 'Data Structures and Algorithms', checked: true },
-    { name: 'System Design Roadmap', checked: true },
-    { name: 'Software Design & Architecture', checked: true }
+    { name: 'Sustainable Farming Practices', checked: true },
+    { name: 'Modern Irrigation Techniques', checked: true },
+    { name: 'Crop Management Systems', checked: false }
   ];
 
   const otherResources = [
-    { name: 'Coding Interview University', checked: true }
+    { name: 'Agricultural Extension Services', checked: true }
   ];
 
   return (
     <div className="min-h-screen bg-white">
       {/* Top Navigation Bar */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <button 
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition text-sm font-medium"
             >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">All Roadmaps</span>
+              <ArrowLeft className="w-4 h-4" />
+              All Roadmaps
             </button>
             
-            <div className="flex items-center gap-3">
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition">
-                <Bookmark className="w-5 h-5 text-gray-600" />
+            <div className="flex items-center gap-2">
+              <button className="p-2 hover:bg-gray-100 rounded-md transition">
+                <Bookmark className="w-4 h-4 text-gray-600" />
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition">
+              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition">
                 <Calendar className="w-4 h-4" />
                 Schedule Learning Time
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-lg transition">
+              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-md transition">
                 <Download className="w-4 h-4" />
                 Download
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-lg transition">
+              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-md transition">
                 <Share2 className="w-4 h-4" />
                 Share
+              </button>
+              <button 
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
               </button>
             </div>
           </div>
@@ -56,65 +63,65 @@ export default function LearnersPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="py-8 border-b border-gray-200">
-          <h1 className="text-6xl font-black text-gray-900 mb-3">
-            Computer Science
+        <div className="py-6 sm:py-8 border-b border-gray-200">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-2">
+            Agricultural Technology
           </h1>
-          <p className="text-xl text-gray-600">
-            Computer Science curriculum with free resources for a self-taught developer.
+          <p className="text-lg sm:text-xl text-gray-600">
+            Agricultural curriculum with free resources for self-taught farmers and entrepreneurs.
           </p>
         </div>
 
         {/* Tabs and Progress Section */}
         <div className="border-b border-gray-200">
-          <div className="flex items-center justify-between py-4">
+          <div className="flex items-center justify-between py-3">
             <div className="flex gap-6">
               <button
                 onClick={() => setActiveTab('roadmap')}
-                className={`flex items-center gap-2 pb-4 px-1 font-semibold border-b-2 transition ${
+                className={`flex items-center gap-2 pb-3 px-1 font-semibold text-sm border-b-2 transition ${
                   activeTab === 'roadmap'
                     ? 'text-gray-900 border-gray-900'
                     : 'text-gray-500 border-transparent hover:text-gray-700'
                 }`}
               >
-                <BookOpen className="w-5 h-5" />
+                <BookOpen className="w-4 h-4" />
                 Roadmap
               </button>
               <button
                 onClick={() => setActiveTab('ai-tutor')}
-                className={`flex items-center gap-2 pb-4 px-1 font-semibold border-b-2 transition ${
+                className={`flex items-center gap-2 pb-3 px-1 font-semibold text-sm border-b-2 transition ${
                   activeTab === 'ai-tutor'
                     ? 'text-gray-900 border-gray-900'
                     : 'text-gray-500 border-transparent hover:text-gray-700'
                 }`}
               >
-                <Sparkles className="w-5 h-5" />
+                <Sparkles className="w-4 h-4" />
                 AI Tutor
               </button>
             </div>
             
-            <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 hover:text-gray-900 transition">
+            <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 transition">
               <Target className="w-4 h-4" />
               Personalize
-              <span className="px-2 py-0.5 bg-yellow-300 text-yellow-900 text-xs font-bold rounded ml-1">
+              <span className="px-2 py-0.5 bg-yellow-300 text-yellow-900 text-xs font-bold rounded">
                 New
               </span>
             </button>
           </div>
 
           {/* Progress Bar */}
-          <div className="py-4 flex items-center justify-between bg-gray-50 -mx-4 px-4">
+          <div className="py-3 flex items-center justify-between bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 bg-yellow-300 text-yellow-900 font-bold text-sm rounded">
+              <span className="px-2.5 py-0.5 bg-yellow-300 text-yellow-900 font-bold text-xs rounded">
                 0% DONE
               </span>
               <span className="text-gray-700 text-sm font-medium">
                 0 of 187 Done
               </span>
             </div>
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 font-semibold transition">
+            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <circle cx="12" cy="12" r="10" strokeWidth="2"/>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6l4 2"/>
@@ -125,24 +132,24 @@ export default function LearnersPage() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-12 gap-6 py-8">
+        <div className="grid grid-cols-12 gap-8 py-8">
           {/* Left Sidebar */}
-          <div className="col-span-3 space-y-6">
+          <div className="col-span-12 lg:col-span-3 space-y-4">
             {/* Related Roadmaps */}
-            <div className="border-2 border-gray-300 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg">
+            <div className="border-2 border-gray-300 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3 text-base">
                 Related Roadmaps
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {relatedRoadmaps.map((roadmap, index) => (
                   <button
                     key={index}
-                    className="flex items-start gap-3 w-full text-left hover:opacity-70 transition"
+                    className="flex items-start gap-2.5 w-full text-left hover:opacity-70 transition group"
                   >
                     <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     </div>
-                    <span className="text-sm text-gray-900 font-medium leading-tight">
+                    <span className="text-sm text-gray-900 leading-tight">
                       {roadmap.name}
                     </span>
                   </button>
@@ -151,20 +158,20 @@ export default function LearnersPage() {
             </div>
 
             {/* Other Resources */}
-            <div className="border-2 border-gray-300 rounded-lg p-6">
-              <h3 className="font-bold text-gray-900 mb-4 text-lg">
+            <div className="border-2 border-gray-300 rounded-lg p-4">
+              <h3 className="font-bold text-gray-900 mb-3 text-base">
                 Other Resources
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {otherResources.map((resource, index) => (
                   <button
                     key={index}
-                    className="flex items-start gap-3 w-full text-left hover:opacity-70 transition"
+                    className="flex items-start gap-2.5 w-full text-left hover:opacity-70 transition group"
                   >
                     <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <Check className="w-3 h-3 text-white" strokeWidth={3} />
                     </div>
-                    <span className="text-sm text-gray-900 font-medium leading-tight">
+                    <span className="text-sm text-gray-900 leading-tight">
                       {resource.name}
                     </span>
                   </button>
@@ -193,10 +200,10 @@ export default function LearnersPage() {
           </div>
 
           {/* Main Roadmap Content */}
-          <div className="col-span-9">
+          <div className="col-span-12 lg:col-span-9">
             <div className="space-y-8">
               {/* Roadmap Visualization Area */}
-              <div className="border border-gray-200 rounded-lg p-12">
+              <div className="border border-gray-200 rounded-lg p-8 sm:p-12">
                 {/* Dotted line connector */}
                 <div className="flex items-center justify-center mb-8">
                   <div className="flex flex-col items-center gap-1">
@@ -208,8 +215,8 @@ export default function LearnersPage() {
 
                 {/* Roadmap Title */}
                 <div className="text-center mb-12">
-                  <h2 className="text-5xl font-black text-gray-900 mb-8">
-                    Computer Science
+                  <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-8">
+                    Agricultural Technology
                   </h2>
                 </div>
 
@@ -223,12 +230,12 @@ export default function LearnersPage() {
                       along with other similar roadmaps
                     </p>
                     <button className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold rounded-lg transition">
-                      roadmap.sh
+                      umojahub.com
                     </button>
                   </div>
                 </div>
 
-                {/* Learning Path Boxes (styled like roadmap.sh) */}
+                {/* Learning Path Boxes */}
                 <div className="relative">
                   {/* Dotted line connector */}
                   <div className="absolute left-1/2 top-0 bottom-0 flex flex-col items-center gap-1 transform -translate-x-1/2">
@@ -241,12 +248,12 @@ export default function LearnersPage() {
                   <div className="space-y-6 relative z-10">
                     <div className="flex justify-center">
                       <button className="px-8 py-4 bg-yellow-300 hover:bg-yellow-400 border-2 border-gray-900 text-gray-900 font-bold text-lg rounded-lg transition-all hover:scale-105 shadow-md">
-                        Pick a Language
+                        Pick a Learning Path
                       </button>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
-                      {['Python', 'Go', 'C#', 'C++'].map((lang, index) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
+                      {['Agriculture Basics', 'Modern Farming', 'Business Skills', 'Technology'].map((lang, index) => (
                         <button
                           key={index}
                           className="px-6 py-4 bg-yellow-300 hover:bg-yellow-400 border-2 border-gray-900 text-gray-900 font-bold text-lg rounded-lg transition-all hover:scale-105 shadow-md"

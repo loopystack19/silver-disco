@@ -10,11 +10,29 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Helper function to get dashboard URL based on role
+  const getDashboardUrl = (role: string) => {
+    switch (role) {
+      case 'farmer':
+        return '/dashboard/farmers';
+      case 'student':
+        return '/dashboard/students';
+      case 'learner':
+        return '/dashboard/learners';
+      case 'buyer':
+        return '/dashboard/buyers';
+      case 'admin':
+        return '/dashboard/admin';
+      default:
+        return '/dashboard/buyers';
+    }
+  };
+
   // Allow access to auth pages if not authenticated
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (token) {
       // Redirect to appropriate dashboard if already authenticated
-      return NextResponse.redirect(new URL(`/dashboard/${token.role}s`, request.url));
+      return NextResponse.redirect(new URL(getDashboardUrl(token.role as string), request.url));
     }
     return NextResponse.next();
   }
@@ -33,21 +51,20 @@ export async function middleware(request: NextRequest) {
     
     // Handle generic /dashboard route
     if (pathname === '/dashboard') {
-      return NextResponse.redirect(new URL(`/dashboard/${role}s`, request.url));
+      return NextResponse.redirect(new URL(getDashboardUrl(role), request.url));
     }
 
     // Check if user is accessing their correct role dashboard
-    if (pathname.startsWith('/dashboard/farmers') && role !== 'farmer') {
-      return NextResponse.redirect(new URL(`/dashboard/${role}s`, request.url));
-    }
-    if (pathname.startsWith('/dashboard/students') && role !== 'student') {
-      return NextResponse.redirect(new URL(`/dashboard/${role}s`, request.url));
-    }
-    if (pathname.startsWith('/dashboard/buyers') && role !== 'buyer') {
-      return NextResponse.redirect(new URL(`/dashboard/${role}s`, request.url));
-    }
-    if (pathname.startsWith('/dashboard/admin') && role !== 'admin') {
-      return NextResponse.redirect(new URL(`/dashboard/${role}s`, request.url));
+    const isAccessingCorrectDashboard = 
+      (pathname.startsWith('/dashboard/farmers') && role === 'farmer') ||
+      (pathname.startsWith('/dashboard/students') && role === 'student') ||
+      (pathname.startsWith('/dashboard/learners') && role === 'learner') ||
+      (pathname.startsWith('/dashboard/buyers') && role === 'buyer') ||
+      (pathname.startsWith('/dashboard/admin') && role === 'admin');
+
+    if (!isAccessingCorrectDashboard) {
+      // Redirect to correct dashboard for user's role
+      return NextResponse.redirect(new URL(getDashboardUrl(role), request.url));
     }
   }
 
