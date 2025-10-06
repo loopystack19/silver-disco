@@ -2,279 +2,271 @@
 
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Bookmark, Calendar, Download, Share2, Sparkles, Target, Check, ArrowLeft, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { BookOpen, Award, PlayCircle, Clock, TrendingUp, ArrowRight, LogOut, Star, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+interface Enrollment {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  progress: number;
+  completedLessons: string[];
+  completed: boolean;
+}
+
+interface Course {
+  id: string;
+  title: string;
+  category: string;
+  level: string;
+  duration: string;
+  enrollmentCount: number;
+  rating: number;
+}
 
 export default function LearnersPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'roadmap' | 'ai-tutor'>('roadmap');
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const relatedRoadmaps = [
-    { name: 'Sustainable Farming Practices', checked: true },
-    { name: 'Modern Irrigation Techniques', checked: true },
-    { name: 'Crop Management Systems', checked: false }
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
-  const otherResources = [
-    { name: 'Agricultural Extension Services', checked: true }
-  ];
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch enrollments
+      const enrollmentResponse = await fetch('/api/enrollments');
+      const enrollmentData = await enrollmentResponse.json();
+      if (enrollmentData.success) {
+        setEnrollments(enrollmentData.enrollments);
+      }
+
+      // Fetch recommended courses
+      const coursesResponse = await fetch('/api/courses?limit=3');
+      const coursesData = await coursesResponse.json();
+      if (coursesData.success) {
+        setRecommendedCourses(coursesData.courses.slice(0, 3));
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inProgressCourses = enrollments.filter(e => !e.completed && e.progress > 0);
+  const completedCourses = enrollments.filter(e => e.completed);
+  const totalProgress = enrollments.length > 0
+    ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length)
+    : 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#007F4E]"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Top Navigation Bar */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <button 
-              onClick={() => router.push('/')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition text-sm font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              All Roadmaps
-            </button>
-            
-            <div className="flex items-center gap-2">
-              <button className="p-2 hover:bg-gray-100 rounded-md transition">
-                <Bookmark className="w-4 h-4 text-gray-600" />
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-md transition">
-                <Calendar className="w-4 h-4" />
-                Schedule Learning Time
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-md transition">
-                <Download className="w-4 h-4" />
-                Download
-              </button>
-              <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded-md transition">
-                <Share2 className="w-4 h-4" />
-                Share
-              </button>
-              <button 
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Learning Dashboard</h1>
+              <p className="text-gray-600 mt-1">Welcome back, {session?.user?.name || 'Learner'}!</p>
             </div>
+            <button
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="py-6 sm:py-8 border-b border-gray-200">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-2">
-            Agricultural Technology
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600">
-            Agricultural curriculum with free resources for self-taught farmers and entrepreneurs.
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-[#007F4E] bg-opacity-10 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-[#007F4E]" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Enrolled Courses</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{enrollments.length}</p>
+            <p className="text-sm text-gray-600 mt-1">Total enrollments</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-[#FFC107] bg-opacity-20 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-[#FFC107]" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Overall Progress</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{totalProgress}%</p>
+            <p className="text-sm text-gray-600 mt-1">Average completion</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-blue-600 bg-opacity-10 rounded-lg flex items-center justify-center">
+                <Award className="w-5 h-5 text-blue-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900">Certificates</h3>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{completedCourses.length}</p>
+            <p className="text-sm text-gray-600 mt-1">Courses completed</p>
+          </div>
         </div>
 
-        {/* Tabs and Progress Section */}
-        <div className="border-b border-gray-200">
-          <div className="flex items-center justify-between py-3">
-            <div className="flex gap-6">
+        {/* Continue Learning Section */}
+        {inProgressCourses.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Continue Learning</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {inProgressCourses.map((enrollment) => (
+                <div
+                  key={enrollment.id}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+                  onClick={() => router.push(`/dashboard/learners/learn/${enrollment.id}`)}
+                >
+                  <div className="h-32 bg-gradient-to-br from-[#007F4E] to-[#005A36] flex items-center justify-center">
+                    <PlayCircle className="w-12 h-12 text-white" />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-900 mb-2">{enrollment.courseTitle}</h3>
+                    <div className="flex items-center justify-between text-sm mb-2">
+                      <span className="text-gray-600">Progress</span>
+                      <span className="font-semibold text-[#007F4E]">{enrollment.progress}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-[#007F4E] h-2 rounded-full transition-all"
+                        style={{ width: `${enrollment.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <button
+            onClick={() => router.push('/dashboard/learners/courses')}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
+          >
+            <div className="w-12 h-12 bg-[#007F4E] rounded-lg flex items-center justify-center mb-4">
+              <BookOpen className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Browse Courses</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Explore our catalog of courses
+            </p>
+            <div className="flex items-center text-[#007F4E] font-medium">
+              View All <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </button>
+
+          <button
+            onClick={() => router.push('/dashboard/learners/certificates')}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
+          >
+            <div className="w-12 h-12 bg-[#FFC107] rounded-lg flex items-center justify-center mb-4">
+              <Award className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">My Certificates</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              View your earned certificates
+            </p>
+            <div className="flex items-center text-[#007F4E] font-medium">
+              View All <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </button>
+
+          <button
+            onClick={() => router.push('/')}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
+          >
+            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-900 mb-2">Back to Home</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Return to the main dashboard
+            </p>
+            <div className="flex items-center text-[#007F4E] font-medium">
+              Go Home <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </button>
+        </div>
+
+        {/* Recommended Courses */}
+        {recommendedCourses.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">Recommended for You</h2>
               <button
-                onClick={() => setActiveTab('roadmap')}
-                className={`flex items-center gap-2 pb-3 px-1 font-semibold text-sm border-b-2 transition ${
-                  activeTab === 'roadmap'
-                    ? 'text-gray-900 border-gray-900'
-                    : 'text-gray-500 border-transparent hover:text-gray-700'
-                }`}
+                onClick={() => router.push('/dashboard/learners/courses')}
+                className="text-[#007F4E] hover:underline font-medium"
               >
-                <BookOpen className="w-4 h-4" />
-                Roadmap
-              </button>
-              <button
-                onClick={() => setActiveTab('ai-tutor')}
-                className={`flex items-center gap-2 pb-3 px-1 font-semibold text-sm border-b-2 transition ${
-                  activeTab === 'ai-tutor'
-                    ? 'text-gray-900 border-gray-900'
-                    : 'text-gray-500 border-transparent hover:text-gray-700'
-                }`}
-              >
-                <Sparkles className="w-4 h-4" />
-                AI Tutor
+                View All
               </button>
             </div>
-            
-            <button className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 transition">
-              <Target className="w-4 h-4" />
-              Personalize
-              <span className="px-2 py-0.5 bg-yellow-300 text-yellow-900 text-xs font-bold rounded">
-                New
-              </span>
-            </button>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="py-3 flex items-center justify-between bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-0.5 bg-yellow-300 text-yellow-900 font-bold text-xs rounded">
-                0% DONE
-              </span>
-              <span className="text-gray-700 text-sm font-medium">
-                0 of 187 Done
-              </span>
-            </div>
-            <button className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 font-medium transition">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <circle cx="12" cy="12" r="10" strokeWidth="2"/>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6l4 2"/>
-              </svg>
-              Track Progress
-            </button>
-          </div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-12 gap-8 py-8">
-          {/* Left Sidebar */}
-          <div className="col-span-12 lg:col-span-3 space-y-4">
-            {/* Related Roadmaps */}
-            <div className="border-2 border-gray-300 rounded-lg p-4">
-              <h3 className="font-bold text-gray-900 mb-3 text-base">
-                Related Roadmaps
-              </h3>
-              <div className="space-y-2.5">
-                {relatedRoadmaps.map((roadmap, index) => (
-                  <button
-                    key={index}
-                    className="flex items-start gap-2.5 w-full text-left hover:opacity-70 transition group"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                    </div>
-                    <span className="text-sm text-gray-900 leading-tight">
-                      {roadmap.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Other Resources */}
-            <div className="border-2 border-gray-300 rounded-lg p-4">
-              <h3 className="font-bold text-gray-900 mb-3 text-base">
-                Other Resources
-              </h3>
-              <div className="space-y-2.5">
-                {otherResources.map((resource, index) => (
-                  <button
-                    key={index}
-                    className="flex items-start gap-2.5 w-full text-left hover:opacity-70 transition group"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
-                    </div>
-                    <span className="text-sm text-gray-900 leading-tight">
-                      {resource.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex gap-2">
-              <button className="w-10 h-10 bg-gray-700 hover:bg-gray-800 text-white rounded flex items-center justify-center transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </button>
-              <button className="w-10 h-10 bg-gray-700 hover:bg-gray-800 text-white rounded flex items-center justify-center transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-              </button>
-              <button className="w-10 h-10 bg-gray-700 hover:bg-gray-800 text-white rounded flex items-center justify-center transition">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* Main Roadmap Content */}
-          <div className="col-span-12 lg:col-span-9">
-            <div className="space-y-8">
-              {/* Roadmap Visualization Area */}
-              <div className="border border-gray-200 rounded-lg p-8 sm:p-12">
-                {/* Dotted line connector */}
-                <div className="flex items-center justify-center mb-8">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                    <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                    <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recommendedCourses.map((course) => (
+                <div
+                  key={course.id}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
+                  onClick={() => router.push(`/dashboard/learners/courses/${course.id}`)}
+                >
+                  <div className="h-32 bg-gradient-to-br from-[#007F4E] to-[#005A36] flex items-center justify-center">
+                    <BookOpen className="w-12 h-12 text-white opacity-50" />
                   </div>
-                </div>
-
-                {/* Roadmap Title */}
-                <div className="text-center mb-12">
-                  <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-8">
-                    Agricultural Technology
-                  </h2>
-                </div>
-
-                {/* Right aligned CTA box */}
-                <div className="flex justify-end mb-12">
-                  <div className="max-w-md text-right">
-                    <p className="text-gray-900 font-medium mb-1">
-                      Find the detailed version of this roadmap
-                    </p>
-                    <p className="text-gray-600 text-sm mb-4">
-                      along with other similar roadmaps
-                    </p>
-                    <button className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold rounded-lg transition">
-                      umojahub.com
-                    </button>
-                  </div>
-                </div>
-
-                {/* Learning Path Boxes */}
-                <div className="relative">
-                  {/* Dotted line connector */}
-                  <div className="absolute left-1/2 top-0 bottom-0 flex flex-col items-center gap-1 transform -translate-x-1/2">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={i} className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                    ))}
-                  </div>
-
-                  {/* Topic boxes */}
-                  <div className="space-y-6 relative z-10">
-                    <div className="flex justify-center">
-                      <button className="px-8 py-4 bg-yellow-300 hover:bg-yellow-400 border-2 border-gray-900 text-gray-900 font-bold text-lg rounded-lg transition-all hover:scale-105 shadow-md">
-                        Pick a Learning Path
-                      </button>
+                  <div className="p-4">
+                    <div className="flex gap-2 mb-2">
+                      <span className="px-2 py-1 bg-[#FFC107] text-gray-900 text-xs font-semibold rounded">
+                        {course.category}
+                      </span>
+                      <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded">
+                        {course.level}
+                      </span>
                     </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-2xl mx-auto">
-                      {['Agriculture Basics', 'Modern Farming', 'Business Skills', 'Technology'].map((lang, index) => (
-                        <button
-                          key={index}
-                          className="px-6 py-4 bg-yellow-300 hover:bg-yellow-400 border-2 border-gray-900 text-gray-900 font-bold text-lg rounded-lg transition-all hover:scale-105 shadow-md"
-                        >
-                          {lang}
-                        </button>
-                      ))}
+                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{course.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        <span>{course.enrollmentCount}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-[#FFC107] text-[#FFC107]" />
+                        <span>{course.rating}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Additional Information */}
-              <div className="text-center text-gray-600">
-                <p className="text-sm">
-                  This is an interactive roadmap. Click on any topic to learn more about it.
-                </p>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
