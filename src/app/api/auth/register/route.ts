@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate role
-    const validRoles: UserRole[] = ['farmer', 'student', 'buyer', 'admin'];
+    const validRoles: UserRole[] = ['farmer', 'student', 'learner', 'buyer', 'admin'];
     if (!validRoles.includes(role)) {
       return NextResponse.json(
         { error: 'Invalid role' },
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Add role-specific fields
-    if (role === 'student') {
+    if (role === 'student' || role === 'learner') {
       newUser.enrolledCourses = [];
       newUser.completedCourses = [];
       newUser.certificates = [];

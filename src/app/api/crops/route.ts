@@ -122,13 +122,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if farmer is verified
-    if (!user.isVerified) {
-      return NextResponse.json(
-        { error: 'Only verified farmers can create crop listings. Please verify your email first.' },
-        { status: 403 }
-      );
-    }
+    // Note: We allow unverified farmers to post, but with a warning flag
 
     const body = await request.json();
     const {

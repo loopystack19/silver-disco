@@ -29,7 +29,7 @@ export default function MarketplacePage() {
     'Kiambu', 'Kilifi', 'Kwale', 'Lamu', 'Tana River', 'Taita Taveta',
     'Marsabit', 'Isiolo', 'Wajir', 'Mandera', 'Samburu', 'Trans Nzoia',
     'Uasin Gishu', 'Elgeyo Marakwet', 'Nandi', 'Baringo', 'Laikipia',
-    'Nakuru', 'Narok', 'West Pokot', 'Turkana'
+    'Narok', 'West Pokot', 'Turkana'
   ].sort();
 
   useEffect(() => {
@@ -325,9 +325,11 @@ export default function MarketplacePage() {
                   <img
                     src={listing.image}
                     alt={listing.cropName}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-cover bg-gray-200"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/images/farmers/default-crop.jpg';
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null; // Prevent infinite loop
+                      target.src = '/images/farming/maize.jpg';
                     }}
                   />
                   <div className="p-4">

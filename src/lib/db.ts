@@ -12,7 +12,7 @@ export async function getDb(): Promise<Low<Database>> {
 
   const file = join(process.cwd(), 'db.json');
   const adapter = new JSONFile<Database>(file);
-  db = new Low<Database>(adapter, { users: [] });
+  db = new Low<Database>(adapter, { users: [], cropListings: [] });
   
   await db.read();
   

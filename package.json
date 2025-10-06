@@ -19,11 +19,12 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/seed-demo-data.ts"
+    "seed": "ts-node -P tsconfig.seed.json scripts/seed-demo-data.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "lowdb": "^7.0.1",
+    "lucide-react": "^0.544.0",
     "next": "^15.5.4",
     "next-auth": "^4.24.11",
     "next-cloudinary": "^6.16.0",

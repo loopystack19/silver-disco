@@ -1,399 +1,430 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { useEffect } from 'react';
+import { ArrowRight, ShoppingCart, BookOpen, Briefcase, Users, Award, FileText, Home, MessageCircle, Mail } from 'lucide-react';
+
+export default function LandingPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect logged-in users to their respective dashboards
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      // @ts-ignore
+      const role = session.user.role;
+      if (role === 'farmer') {
+        router.push('/dashboard/farmers/marketplace');
+      } else if (role === 'student') {
+        router.push('/dashboard/students');
+      } else if (role === 'learner') {
+        router.push('/dashboard/learners');
+      } else if (role === 'admin') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/dashboard/buyers');
+      }
+    }
+  }, [session, status, router]);
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    element?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <main className="min-h-screen">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm fixed w-full top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">U</span>
-              </div>
-              <span className="text-2xl font-bold text-primary">UmojaHub</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <a href="#features" className="text-gray-700 hover:text-primary transition">
-                Features
-              </a>
-              <a href="/marketplace" className="text-gray-700 hover:text-primary transition">
-                Marketplace
-              </a>
-              <a href="#about" className="text-gray-700 hover:text-primary transition">
-                About
-              </a>
-              <a href="#contact" className="text-gray-700 hover:text-primary transition">
-                Contact
-              </a>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button className="px-4 py-2 text-primary hover:text-primary-700 transition">
-                Login
-              </button>
-              <button className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 transition">
-                Sign Up
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
+    <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-accent-50 pt-20">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23007F4E' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/landing/hero.jpg"
+            alt="African farmers working in field"
+            fill
+            className="object-cover"
+            priority
+            quality={90}
+          />
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/50"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Main Headline */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 text-primary-800 leading-tight">
-              Connecting Africa's<br />
-              <span className="text-primary">Farmers, Learners, and Innovators</span>
-            </h1>
-            
-            {/* Description */}
-            <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-              UmojaHub empowers communities through access to education, employment, and food security by connecting farmers, students, and job seekers on one digital platform.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button className="px-8 py-4 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-primary-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                Get Started →
-              </button>
-              <button className="px-8 py-4 bg-white text-primary text-lg font-semibold rounded-lg border-2 border-primary hover:bg-primary-50 transition-all shadow-md">
-                Explore Platform
-              </button>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto pt-8 border-t border-gray-200">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">1000+</div>
-                <div className="text-sm text-gray-600">Farmers Connected</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">5000+</div>
-                <div className="text-sm text-gray-600">Students Learning</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-primary">500+</div>
-                <div className="text-sm text-gray-600">Jobs Posted</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Feature Overview Section */}
-      <section id="features" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-primary-800 mb-4">
-              Three Powerful Hubs, One Platform
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Everything you need to grow, earn, and thrive—all connected seamlessly
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {/* Farmers Hub - Inspired by Agrikool */}
-            <div className="group bg-gradient-to-br from-primary-50 to-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-primary-100">
-              {/* Image Section */}
-              <div className="relative h-48 bg-primary-100 overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600&h=400&fit=crop"
-                  alt="African farmer in field"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-primary-700 text-xs font-semibold rounded-full shadow-md">
-                    For Farmers
-                  </span>
-                </div>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Farmers Hub
-                </h3>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Sell your produce directly to buyers, get fair prices, and grow your farming business with verified marketplace access.
-                </p>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-700">Direct marketplace access</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-700">Verified farmer badges</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-700">Agricultural tips & support</span>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm text-gray-700">Real-time price tracking</span>
-                </div>
-              </div>
-
-                <button className="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors">
-                  Start Selling →
-                </button>
-              </div>
-            </div>
-
-            {/* Learners Hub - Inspired by Khan Academy */}
-            <div className="group bg-gradient-to-br from-sky-50 to-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-sky-100">
-              {/* Image Section */}
-              <div className="relative h-48 bg-sky-100 overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop"
-                  alt="African students learning together"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-sky-700 text-xs font-semibold rounded-full shadow-md">
-                    For Learners
-                  </span>
-                </div>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Learners Hub
-                </h3>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Access free learning materials, build job-ready skills, and earn verified certificates to boost your career prospects.
-                </p>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-sky mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Free online courses</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-sky mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Progress tracking dashboard</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-sky mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Verified certificates</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-sky mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Personalized learning paths</span>
-                  </div>
-                </div>
-
-                <button className="w-full py-3 bg-sky text-white font-semibold rounded-lg hover:bg-sky-600 transition-colors">
-                  Start Learning →
-                </button>
-              </div>
-            </div>
-
-            {/* Employment Hub - Inspired by Internshala */}
-            <div className="group bg-gradient-to-br from-accent-50 to-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-accent-100">
-              {/* Image Section */}
-              <div className="relative h-48 bg-accent-100 overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=400&fit=crop"
-                  alt="Young African professional working"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-terracotta-700 text-xs font-semibold rounded-full shadow-md">
-                    For Job Seekers
-                  </span>
-                </div>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Employment Hub
-                </h3>
-                
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  Find micro-jobs, internships, and full-time opportunities. Build your portfolio and connect with employers directly.
-                </p>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-terracotta mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Micro-jobs & internships</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-terracotta mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">AI-powered CV optimization</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-terracotta mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Project collaboration</span>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <svg className="w-5 h-5 text-terracotta mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm text-gray-700">Application tracking</span>
-                  </div>
-                </div>
-
-                <button className="w-full py-3 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-600 transition-colors">
-                  Find Jobs →
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Integration Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6 text-primary">
-              The Power of Integration
-            </h2>
-            <p className="text-lg text-gray-700 mb-8">
-              UmojaHub's key innovation is seamless integration. Education leads to
-              employment, employment provides resources for food security, and
-              proper nutrition enables learning—all in one platform.
-            </p>
-            <div className="grid md:grid-cols-2 gap-6 text-left">
-              <div className="p-6 bg-primary-50 rounded-lg">
-                <h4 className="font-bold text-primary mb-2">
-                  🎓 Learn → Work
-                </h4>
-                <p className="text-sm text-gray-700">
-                  Complete courses, earn certificates, and use them to apply for
-                  jobs—all without leaving the platform.
-                </p>
-              </div>
-              <div className="p-6 bg-sky-50 rounded-lg">
-                <h4 className="font-bold text-sky mb-2">
-                  🌱 Learn → Sell
-                </h4>
-                <p className="text-sm text-gray-700">
-                  Complete agricultural courses to earn "Verified Farmer" badges
-                  that boost marketplace credibility.
-                </p>
-              </div>
-              <div className="p-6 bg-accent-50 rounded-lg">
-                <h4 className="font-bold text-terracotta mb-2">
-                  💻 Work → Impact
-                </h4>
-                <p className="text-sm text-gray-700">
-                  Students collaborate on projects that benefit farmers and
-                  communities, creating real-world value.
-                </p>
-              </div>
-              <div className="p-6 bg-terracotta-50 rounded-lg">
-                <h4 className="font-bold text-primary mb-2">
-                  🔄 Full Circle
-                </h4>
-                <p className="text-sm text-gray-700">
-                  Every action in one hub creates opportunities in another—building
-                  a sustainable ecosystem.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-sky text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Ready to Join UmojaHub?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Whether you're a student, farmer, or job seeker—UmojaHub is here to
-            empower your journey.
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center text-white">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            Empowering Farmers, Learners,<br />and Job Seekers Across Africa
+          </h1>
+          <p className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto leading-relaxed">
+            UmojaHub connects people to opportunities that drive food security, education, and employment.
           </p>
-          <button className="btn-accent text-lg px-12 py-4 text-gray-900">
-            Sign Up Now
-          </button>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={() => router.push('/register')}
+              className="group px-8 py-4 bg-green-600 hover:bg-green-700 text-white text-lg font-semibold rounded-lg transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 flex items-center gap-2"
+            >
+              Get Started
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button
+              onClick={() => scrollToSection('farmers-hub')}
+              className="px-8 py-4 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white text-lg font-semibold rounded-lg transition-all border-2 border-white/50 flex items-center gap-2"
+            >
+              Explore Platform
+            </button>
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 rounded-full border-2 border-white/50 flex items-start justify-center p-2">
+              <div className="w-1 h-3 bg-white rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Farmers Section (Food Security Hub) */}
+      <section id="farmers-hub" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+            {/* Image */}
+            <div className="order-2 lg:order-1">
+              <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/landing/farmers-section.jpg"
+                  alt="African farmer with produce"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="order-1 lg:order-2">
+              <div className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold mb-4">
+                Food Security Hub
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Farmers Hub
+              </h2>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Sell your produce directly, access verified buyers, and grow your income through the UmojaHub Marketplace.
+              </p>
+
+              {/* Features */}
+              <div className="space-y-4 mb-8">
+                {[
+                  'Direct access to verified buyers',
+                  'Fair pricing with no middlemen',
+                  'Secure payment systems',
+                  'Real-time market insights'
+                ].map((feature, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-green-600"></div>
+                    </div>
+                    <span className="text-gray-700">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => router.push('/dashboard/farmers/marketplace')}
+                className="group px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+              >
+                Visit Marketplace
+                <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Learners Section (Education Hub) */}
+      <section id="learners-hub" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-16">
+              <div className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
+                Education Hub
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Learners Hub
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Access free learning resources, track your progress, and earn certifications to strengthen your career path.
+              </p>
+            </div>
+
+            {/* Roadmap-style Visual */}
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              {/* Image */}
+              <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/landing/learners-section.jpg"
+                  alt="Students learning together"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              {/* Learning Path Steps */}
+              <div className="space-y-6">
+                {[
+                  {
+                    number: '01',
+                    title: 'Choose Your Path',
+                    description: 'Select from agriculture, technology, business, or vocational skills'
+                  },
+                  {
+                    number: '02',
+                    title: 'Learn at Your Pace',
+                    description: 'Access courses anytime, anywhere with mobile-friendly content'
+                  },
+                  {
+                    number: '03',
+                    title: 'Track Progress',
+                    description: 'Monitor your learning journey with detailed analytics'
+                  },
+                  {
+                    number: '04',
+                    title: 'Earn Certificates',
+                    description: 'Receive verified credentials to showcase your skills'
+                  }
+                ].map((step, index) => (
+                  <div key={index} className="flex gap-4 group">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold group-hover:scale-110 transition-transform">
+                      {step.number}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
+                      <p className="text-gray-600">{step.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <div className="text-center">
+              <button
+                onClick={() => router.push('/dashboard/learners')}
+                className="group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+              >
+                Start Learning
+                <BookOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Students Section (Employment Hub) */}
+      <section id="employment-hub" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-7xl mx-auto">
+            {/* Header with Image */}
+            <div className="grid lg:grid-cols-2 gap-12 items-center mb-16">
+              {/* Content */}
+              <div>
+                <div className="inline-block px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mb-4">
+                  Employment Hub
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  Employment Hub
+                </h2>
+                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  Post your projects, gain real-world experience, or hire interns. UmojaHub bridges the gap between education and opportunity.
+                </p>
+                <button
+                  onClick={() => router.push('/dashboard/students')}
+                  className="group px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl inline-flex items-center gap-2"
+                >
+                  Explore Jobs
+                  <Briefcase className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </button>
+              </div>
+
+              {/* Image */}
+              <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/images/landing/students-section.jpg"
+                  alt="Young professionals collaborating"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Feature Cards */}
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <FileText className="w-8 h-8" />,
+                  title: 'Post Projects',
+                  description: 'Employers can post micro-jobs, internships, and project opportunities for students and graduates.'
+                },
+                {
+                  icon: <Users className="w-8 h-8" />,
+                  title: 'Find Internships',
+                  description: 'Browse verified internship opportunities to gain real-world experience in your field.'
+                },
+                {
+                  icon: <Award className="w-8 h-8" />,
+                  title: 'Upload CV for Review',
+                  description: 'Get your CV professionally reviewed and optimized for better job opportunities.'
+                }
+              ].map((feature, index) => (
+                <div
+                  key={index}
+                  className="group p-8 bg-gradient-to-br from-orange-50 to-white rounded-2xl border border-orange-100 hover:shadow-xl transition-all hover:-translate-y-1"
+                >
+                  <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
             <div>
-              <h4 className="font-bold text-xl mb-4 text-accent">UmojaHub</h4>
-              <p className="text-gray-400 text-sm">
-                Connecting Africa's Learners, Workers, and Farmers for a better
-                tomorrow.
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">U</span>
+                </div>
+                <span className="text-xl font-bold">UmojaHub</span>
+              </div>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Connecting Africa's farmers, learners, and job seekers to opportunities that transform lives.
               </p>
             </div>
+
+            {/* Quick Links */}
             <div>
-              <h5 className="font-bold mb-4">Quick Links</h5>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li>About Us</li>
-                <li>Education Hub</li>
-                <li>Employment Hub</li>
-                <li>Food Security Hub</li>
+              <h4 className="font-bold text-lg mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <button
+                    onClick={() => router.push('/')}
+                    className="text-gray-400 hover:text-white transition flex items-center gap-2"
+                  >
+                    <Home className="w-4 h-4" />
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection('farmers-hub')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    About
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/farmers/marketplace')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    Marketplace
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/students')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    Jobs
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/learners')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    Courses
+                  </button>
+                </li>
               </ul>
             </div>
+
+            {/* For Users */}
             <div>
-              <h5 className="font-bold mb-4">Contact</h5>
-              <p className="text-sm text-gray-400">
-                Email: info@umojahub.africa
-                <br />
-                Location: Nairobi, Kenya
-              </p>
+              <h4 className="font-bold text-lg mb-4">Platform</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/farmers/marketplace')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    For Farmers
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/learners')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    For Learners
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/students')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    For Job Seekers
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => router.push('/dashboard/buyers')}
+                    className="text-gray-400 hover:text-white transition"
+                  >
+                    For Buyers
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-bold text-lg mb-4">Contact</h4>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start gap-2 text-gray-400">
+                  <Mail className="w-4 h-4 mt-1 flex-shrink-0" />
+                  <span>info@umojahub.africa</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-400">
+                  <MessageCircle className="w-4 h-4 mt-1 flex-shrink-0" />
+                  <span>+254 700 000 000</span>
+                </li>
+                <li className="flex items-start gap-2 text-gray-400">
+                  <Home className="w-4 h-4 mt-1 flex-shrink-0" />
+                  <span>Nairobi, Kenya</span>
+                </li>
+              </ul>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-            <p>© 2025 UmojaHub. All rights reserved.</p>
+
+          {/* Copyright */}
+          <div className="pt-8 border-t border-gray-800 text-center">
+            <p className="text-sm text-gray-400">
+              © 2025 UmojaHub. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
