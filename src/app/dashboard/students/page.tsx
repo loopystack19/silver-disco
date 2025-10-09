@@ -106,10 +106,20 @@ export default function StudentDashboard() {
               <div className="font-semibold text-gray-900 mb-1">🚀 Project Sprints</div>
               <div className="text-sm text-gray-600">Build portfolio with real data</div>
             </Link>
-            <button className="p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition text-left">
-              <div className="font-semibold text-gray-900 mb-1">👤 Edit Profile</div>
-              <div className="text-sm text-gray-600">Update your information</div>
-            </button>
+            <Link 
+              href="/jobs"
+              className="p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition text-left block"
+            >
+              <div className="font-semibold text-gray-900 mb-1">💼 Job Board</div>
+              <div className="text-sm text-gray-600">Find job opportunities</div>
+            </Link>
+            <Link 
+              href="/applications"
+              className="p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 transition text-left block"
+            >
+              <div className="font-semibold text-gray-900 mb-1">📋 My Applications</div>
+              <div className="text-sm text-gray-600">Track application status</div>
+            </Link>
           </div>
         </div>
       </main>
