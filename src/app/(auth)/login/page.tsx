@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { AlertCircle, Mail } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,10 +14,42 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerificationBanner, setShowVerificationBanner] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [resendMessage, setResendMessage] = useState('');
+
+  const handleResendVerification = async () => {
+    setResendingVerification(true);
+    setResendMessage('');
+    
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResendMessage('Verification email sent! Please check your inbox.');
+      } else {
+        setResendMessage(data.error || 'Failed to send verification email');
+      }
+    } catch (error) {
+      setResendMessage('An error occurred. Please try again.');
+    } finally {
+      setResendingVerification(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setShowVerificationBanner(false);
+    setResendMessage('');
     setIsLoading(true);
 
     try {
@@ -27,7 +60,13 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError(result.error);
+        // Check if the error is about unverified email
+        if (result.error.includes('verify') || result.error.includes('verified')) {
+          setShowVerificationBanner(true);
+          setError('');
+        } else {
+          setError(result.error);
+        }
         setIsLoading(false);
         return;
       }
@@ -49,6 +88,34 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-green-600 mb-2">UmojaHub</h1>
           <p className="text-gray-600">Welcome back! Please login to your account.</p>
         </div>
+
+        {/* Verification Banner */}
+        {showVerificationBanner && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-start">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-yellow-800 text-sm font-semibold mb-2">
+                  Email Not Verified
+                </p>
+                <p className="text-yellow-700 text-sm mb-3">
+                  Your email isn't verified yet. Please check your inbox for the verification link.
+                </p>
+                <button
+                  onClick={handleResendVerification}
+                  disabled={resendingVerification}
+                  className="flex items-center gap-2 text-yellow-700 hover:text-yellow-800 font-semibold text-sm disabled:opacity-50"
+                >
+                  <Mail className="w-4 h-4" />
+                  {resendingVerification ? 'Sending...' : 'Resend Verification Email'}
+                </button>
+                {resendMessage && (
+                  <p className="mt-2 text-sm text-yellow-700">{resendMessage}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (

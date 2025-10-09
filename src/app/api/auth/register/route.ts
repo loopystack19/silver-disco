@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb, saveDb } from '@/lib/db';
 import { User, UserRole } from '@/types/user';
+import { sendVerificationEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     // Generate verification token
     const verificationToken = uuidv4();
     const verificationTokenExpiry = new Date();
-    verificationTokenExpiry.setHours(verificationTokenExpiry.getHours() + 24); // 24 hours expiry
+    verificationTokenExpiry.setMinutes(verificationTokenExpiry.getMinutes() + 30); // 30 minutes expiry
 
     // Create new user
     const newUser: User = {
@@ -93,12 +94,24 @@ export async function POST(request: NextRequest) {
     db.data.users.push(newUser);
     await saveDb(db);
 
+    // Send verification email
+    try {
+      await sendVerificationEmail({
+        to: email,
+        name,
+        token: verificationToken,
+      });
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Continue with registration even if email fails
+    }
+
     // Return user without password
     const { password: _, ...userWithoutPassword } = newUser;
 
     return NextResponse.json(
       {
-        message: 'User registered successfully',
+        message: 'User registered successfully. Please check your email to verify your account.',
         user: userWithoutPassword,
       },
       { status: 201 }
