@@ -20,7 +20,8 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "seed": "ts-node -P tsconfig.seed.json scripts/seed-demo-data.ts",
-    "seed:courses": "ts-node -P tsconfig.seed.json scripts/seed-courses.ts"
+    "seed:courses": "ts-node -P tsconfig.seed.json scripts/seed-courses.ts",
+    "seed:projects": "ts-node -P tsconfig.seed.json scripts/seed-projects.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

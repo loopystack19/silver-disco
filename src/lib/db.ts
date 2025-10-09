@@ -17,7 +17,12 @@ export async function getDb(): Promise<Low<Database>> {
     cropListings: [],
     courses: [],
     enrollments: [],
-    certificates: []
+    certificates: [],
+    projects: [],
+    projectSubmissions: [],
+    lecturerVerifications: [],
+    jobListings: [],
+    jobApplications: []
   });
   
   await db.read();
@@ -29,7 +34,12 @@ export async function getDb(): Promise<Low<Database>> {
       cropListings: [],
       courses: [],
       enrollments: [],
-      certificates: []
+      certificates: [],
+      projects: [],
+      projectSubmissions: [],
+      lecturerVerifications: [],
+      jobListings: [],
+      jobApplications: []
     };
     await db.write();
   }
@@ -38,6 +48,11 @@ export async function getDb(): Promise<Low<Database>> {
   if (!db.data.courses) db.data.courses = [];
   if (!db.data.enrollments) db.data.enrollments = [];
   if (!db.data.certificates) db.data.certificates = [];
+  if (!db.data.projects) db.data.projects = [];
+  if (!db.data.projectSubmissions) db.data.projectSubmissions = [];
+  if (!db.data.lecturerVerifications) db.data.lecturerVerifications = [];
+  if (!db.data.jobListings) db.data.jobListings = [];
+  if (!db.data.jobApplications) db.data.jobApplications = [];
   
   return db;
 }
