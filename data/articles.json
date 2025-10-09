@@ -1,0 +1,124 @@
+{
+  "articles": [
+    {
+      "id": "1",
+      "title": "Climate-Smart Agriculture Practices for Kenyan Farmers",
+      "description": "Learn about climate-resilient farming techniques that can help you adapt to changing weather patterns while maintaining productivity and sustainability.",
+      "link": "https://www.fao.org/climate-smart-agriculture",
+      "category": "Climate-Smart Agriculture",
+      "source": "FAO",
+      "pubDate": "2025-10-01T10:00:00Z",
+      "image": "/images/knowledge/climate-smart.jpg"
+    },
+    {
+      "id": "2",
+      "title": "Effective Irrigation Techniques for Arid Regions",
+      "description": "Discover water-efficient irrigation methods including drip irrigation and rainwater harvesting systems that can maximize crop yields while conserving water resources.",
+      "link": "https://www.fao.org/irrigation",
+      "category": "Irrigation & Water Management",
+      "source": "FAO",
+      "pubDate": "2025-09-28T09:00:00Z",
+      "image": "/images/knowledge/irrigation-tips.jpg"
+    },
+    {
+      "id": "3",
+      "title": "Managing Maize Diseases: Prevention and Treatment",
+      "description": "Comprehensive guide to identifying, preventing, and treating common maize diseases including blight, rust, and stem borers that affect Kenyan farms.",
+      "link": "https://www.kilimo.go.ke/maize-diseases",
+      "category": "Crop Diseases & Solutions",
+      "source": "Ministry of Agriculture",
+      "pubDate": "2025-09-25T08:30:00Z",
+      "image": "/images/knowledge/maize-care.jpg"
+    },
+    {
+      "id": "4",
+      "title": "Sustainable Composting Methods for Better Soil Health",
+      "description": "Learn how to create nutrient-rich compost from farm waste, improving soil fertility naturally while reducing reliance on chemical fertilizers.",
+      "link": "https://agrilinks.org/composting",
+      "category": "Sustainable Farming",
+      "source": "Agrilinks",
+      "pubDate": "2025-09-22T11:00:00Z",
+      "image": "/images/knowledge/composting.jpg"
+    },
+    {
+      "id": "5",
+      "title": "Integrated Pest Management: Reducing Chemical Use",
+      "description": "Explore natural pest control methods and integrated strategies that protect crops while minimizing environmental impact and production costs.",
+      "link": "https://www.fao.org/pest-management",
+      "category": "Crop Diseases & Solutions",
+      "source": "FAO",
+      "pubDate": "2025-09-20T07:00:00Z",
+      "image": "/images/knowledge/pest-control.jpg"
+    },
+    {
+      "id": "6",
+      "title": "Market Price Trends for Major Crops in Kenya",
+      "description": "Stay informed about current market prices and trends for maize, beans, potatoes, and other major crops to make better selling decisions.",
+      "link": "https://www.kilimo.go.ke/market-prices",
+      "category": "Market Trends & Pricing Insights",
+      "source": "Ministry of Agriculture",
+      "pubDate": "2025-09-18T06:00:00Z",
+      "image": "/images/knowledge/market-trends.jpg"
+    },
+    {
+      "id": "7",
+      "title": "Greenhouse Farming: Maximizing Year-Round Production",
+      "description": "Discover the benefits of greenhouse farming and learn how to set up and manage a greenhouse for consistent crop production throughout the year.",
+      "link": "https://agrilinks.org/greenhouse-farming",
+      "category": "Sustainable Farming",
+      "source": "Agrilinks",
+      "pubDate": "2025-09-15T10:30:00Z",
+      "image": "/images/knowledge/greenhouse.jpg"
+    },
+    {
+      "id": "8",
+      "title": "Crop Rotation Benefits and Implementation",
+      "description": "Understand how crop rotation improves soil health, reduces pest pressure, and increases overall farm productivity with practical implementation tips.",
+      "link": "https://www.fao.org/crop-rotation",
+      "category": "Sustainable Farming",
+      "source": "FAO",
+      "pubDate": "2025-09-12T09:00:00Z",
+      "image": "/images/knowledge/crop-rotation.jpg"
+    },
+    {
+      "id": "9",
+      "title": "Water Conservation Strategies for Drought Resilience",
+      "description": "Essential water conservation techniques including mulching, soil moisture monitoring, and efficient irrigation timing to protect against drought.",
+      "link": "https://www.kilimo.go.ke/water-conservation",
+      "category": "Irrigation & Water Management",
+      "source": "Ministry of Agriculture",
+      "pubDate": "2025-09-10T08:00:00Z",
+      "image": "/images/knowledge/water-conservation.jpg"
+    },
+    {
+      "id": "10",
+      "title": "Organic Farming Certification and Markets",
+      "description": "Learn about organic farming standards, certification processes, and how to access premium organic markets for higher profits.",
+      "link": "https://agrilinks.org/organic-farming",
+      "category": "Sustainable Farming",
+      "source": "Agrilinks",
+      "pubDate": "2025-09-08T07:30:00Z",
+      "image": "/images/knowledge/organic-farming.jpg"
+    },
+    {
+      "id": "11",
+      "title": "Soil Testing and Fertilizer Management",
+      "description": "Understand the importance of soil testing and how to use results to apply the right fertilizers in correct amounts for optimal crop growth.",
+      "link": "https://www.fao.org/soil-health",
+      "category": "Sustainable Farming",
+      "source": "FAO",
+      "pubDate": "2025-09-05T11:00:00Z",
+      "image": "/images/knowledge/soil-health.jpg"
+    },
+    {
+      "id": "12",
+      "title": "Livestock Integration for Mixed Farming Systems",
+      "description": "Explore the benefits of integrating livestock with crop production, including manure management, additional income, and improved farm sustainability.",
+      "link": "https://www.kilimo.go.ke/livestock-integration",
+      "category": "Sustainable Farming",
+      "source": "Ministry of Agriculture",
+      "pubDate": "2025-09-02T06:30:00Z",
+      "image": "/images/knowledge/livestock-care.jpg"
+    }
+  ]
+}
