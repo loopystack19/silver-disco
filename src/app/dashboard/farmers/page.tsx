@@ -340,8 +340,10 @@ function ListingModal({
     pricePerUnit: listing?.pricePerUnit || '',
     description: listing?.description || '',
     location: listing?.location || '',
-    image: listing?.image || '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>(listing?.image || '');
+  const [dragActive, setDragActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const kenyanCounties = [
@@ -357,18 +359,95 @@ function ListingModal({
 
   const units = ['bags', 'kg', 'tonnes', 'crates', 'pieces', 'liters'];
 
+  const handleImageChange = (file: File | null) => {
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Invalid file type. Only JPG, JPEG, PNG, and WEBP images are allowed.');
+      return;
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert('File size exceeds 5MB limit. Please choose a smaller image.');
+      return;
+    }
+
+    setImageFile(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleImageChange(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleImageChange(e.target.files[0]);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate image for new listings
+    if (!listing && !imageFile) {
+      alert('Please upload a crop image before submitting your listing.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       const url = listing ? `/api/crops/${listing.id}` : '/api/crops';
       const method = listing ? 'PUT' : 'POST';
 
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('cropName', formData.cropName);
+      formDataToSend.append('quantity', formData.quantity.toString());
+      formDataToSend.append('unit', formData.unit);
+      formDataToSend.append('pricePerUnit', formData.pricePerUnit.toString());
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('location', formData.location);
+      
+      if (imageFile) {
+        formDataToSend.append('image', imageFile);
+      }
+
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       if (res.ok) {
@@ -502,17 +581,84 @@ function ListingModal({
               />
             </div>
 
+            {/* Image Upload Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Image URL (optional)
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Crop Image *
               </label>
-              <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                placeholder="https://example.com/image.jpg"
-              />
+              
+              {imagePreview ? (
+                <div className="space-y-3">
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-300">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="w-full px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  >
+                    Replace Image
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  className={`relative border-2 border-dashed rounded-lg p-8 text-center transition ${
+                    dragActive
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept=".jpg,.jpeg,.png,.webp"
+                    onChange={handleFileInput}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer flex flex-col items-center"
+                  >
+                    <svg
+                      className="w-12 h-12 text-gray-400 mb-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-semibold text-green-600">Click to upload</span> or drag
+                      and drop
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      JPG, JPEG, PNG or WEBP (max 5MB)
+                    </p>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4 pt-4">

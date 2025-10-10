@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { getDb, saveDb } from '@/lib/db';
 import { CropListing, User } from '@/types/user';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+import sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
 
 // GET single crop listing
 export async function GET(
@@ -77,32 +81,80 @@ export async function PUT(
       );
     }
 
-    const body = await request.json();
-    const {
-      cropName,
-      quantity,
-      unit,
-      pricePerUnit,
-      description,
-      location,
-      status,
-      image,
-    } = body;
+    // Parse FormData for file upload
+    const formData = await request.formData();
+    const cropName = formData.get('cropName') as string;
+    const quantity = formData.get('quantity') as string;
+    const unit = formData.get('unit') as string;
+    const pricePerUnit = formData.get('pricePerUnit') as string;
+    const description = formData.get('description') as string;
+    const location = formData.get('location') as string;
+    const statusValue = formData.get('status') as string;
+    const imageFile = formData.get('image') as File | null;
+
+    let imagePath = listing.image;
+
+    // Handle new image upload if provided
+    if (imageFile && imageFile.size > 0) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(imageFile.type)) {
+        return NextResponse.json(
+          { error: 'Invalid file type. Only JPG, JPEG, PNG, and WEBP images are allowed.' },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (5MB max)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (imageFile.size > maxSize) {
+        return NextResponse.json(
+          { error: 'File size exceeds 5MB limit.' },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const fileExtension = imageFile.name.split('.').pop();
+      const uniqueFilename = `${uuidv4()}.${fileExtension}`;
+      const uploadPath = join(process.cwd(), 'public', 'uploads', 'crops', uniqueFilename);
+
+      // Convert file to buffer
+      const bytes = await imageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+
+      // Compress and optimize image using sharp
+      try {
+        await sharp(buffer)
+          .resize(1200, 1200, {
+            fit: 'inside',
+            withoutEnlargement: true,
+          })
+          .jpeg({ quality: 85 })
+          .toFile(uploadPath);
+        
+        // Update image path
+        imagePath = `/uploads/crops/${uniqueFilename}`;
+      } catch (imageError) {
+        console.error('Error processing image:', imageError);
+        return NextResponse.json(
+          { error: 'Failed to process image' },
+          { status: 500 }
+        );
+      }
+    }
 
     // Update listing
     const updatedListing: CropListing = {
       ...listing,
       cropName: cropName || listing.cropName,
-      quantity: quantity !== undefined ? parseFloat(quantity) : listing.quantity,
+      quantity: quantity ? parseFloat(quantity) : listing.quantity,
       unit: unit || listing.unit,
-      pricePerUnit:
-        pricePerUnit !== undefined
-          ? parseFloat(pricePerUnit)
-          : listing.pricePerUnit,
+      pricePerUnit: pricePerUnit ? parseFloat(pricePerUnit) : listing.pricePerUnit,
       description: description || listing.description,
       location: location || listing.location,
-      status: status || listing.status,
-      image: image || listing.image,
+      status: (statusValue as CropListing['status']) || listing.status,
+      image: imagePath,
       updatedAt: new Date(),
     };
 
