@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb, saveDb } from '@/lib/db';
 import { User, UserRole } from '@/types/user';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationCode } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,9 +11,17 @@ export async function POST(request: NextRequest) {
     const { email, password, name, role, phone, location } = body;
 
     // Validate required fields
-    if (!email || !password || !name || !role) {
+    if (!email || !password || !name || !role || !phone || !location) {
       return NextResponse.json(
-        { error: 'Email, password, name, and role are required' },
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate name (minimum 3 characters)
+    if (name.trim().length < 3) {
+      return NextResponse.json(
+        { error: 'Full name must be at least 3 characters' },
         { status: 400 }
       );
     }
@@ -27,10 +35,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate password strength
-    if (password.length < 8) {
+    // Validate password strength (minimum 6 characters)
+    if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Password must be at least 8 characters long' },
+        { error: 'Password must be at least 6 characters long' },
+        { status: 400 }
+      );
+    }
+
+    // Validate phone number
+    const cleanPhone = phone.replace(/[\s-]/g, '');
+    const startsWithCountryCode = cleanPhone.startsWith('+254');
+    const startsWithZero = cleanPhone.startsWith('07');
+    
+    if (!startsWithCountryCode && !startsWithZero) {
+      return NextResponse.json(
+        { error: 'Phone number must start with +254 or 07' },
+        { status: 400 }
+      );
+    }
+    
+    const numbersOnly = cleanPhone.replace('+', '');
+    if (!/^\d+$/.test(numbersOnly)) {
+      return NextResponse.json(
+        { error: 'Phone number must contain only numbers' },
+        { status: 400 }
+      );
+    }
+    
+    if (numbersOnly.length < 10 || numbersOnly.length > 13) {
+      return NextResponse.json(
+        { error: 'Phone number must be 10-13 digits' },
+        { status: 400 }
+      );
+    }
+
+    // Validate location (Kenya counties)
+    const KENYA_COUNTIES = [
+      'Baringo', 'Bomet', 'Bungoma', 'Busia', 'Elgeyo-Marakwet', 'Embu', 'Garissa',
+      'Homa Bay', 'Isiolo', 'Kajiado', 'Kakamega', 'Kericho', 'Kiambu', 'Kilifi',
+      'Kirinyaga', 'Kisii', 'Kisumu', 'Kitui', 'Kwale', 'Laikipia', 'Lamu', 'Machakos',
+      'Makueni', 'Mandera', 'Marsabit', 'Meru', 'Migori', 'Mombasa', 'Murang\'a',
+      'Nairobi', 'Nakuru', 'Nandi', 'Narok', 'Nyamira', 'Nyandarua', 'Nyeri',
+      'Samburu', 'Siaya', 'Taita-Taveta', 'Tana River', 'Tharaka-Nithi', 'Trans Nzoia',
+      'Turkana', 'Uasin Gishu', 'Vihiga', 'Wajir', 'West Pokot'
+    ];
+    
+    if (!KENYA_COUNTIES.includes(location)) {
+      return NextResponse.json(
+        { error: 'Invalid county selected' },
         { status: 400 }
       );
     }
@@ -61,10 +114,9 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate verification token
-    const verificationToken = uuidv4();
-    const verificationTokenExpiry = new Date();
-    verificationTokenExpiry.setMinutes(verificationTokenExpiry.getMinutes() + 30); // 30 minutes expiry
+    // Generate 5-digit verification code
+    const verificationCode = Math.floor(10000 + Math.random() * 90000).toString();
+    const codeGeneratedAt = new Date();
 
     // Create new user
     const newUser: User = {
@@ -77,8 +129,9 @@ export async function POST(request: NextRequest) {
       location: location || undefined,
       skills: [],
       isVerified: false,
-      verificationToken,
-      verificationTokenExpiry,
+      verificationCode,
+      codeGeneratedAt,
+      resendAttempts: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -94,15 +147,15 @@ export async function POST(request: NextRequest) {
     db.data.users.push(newUser);
     await saveDb(db);
 
-    // Send verification email
+    // Send verification code email
     try {
-      await sendVerificationEmail({
+      await sendVerificationCode({
         to: email,
         name,
-        token: verificationToken,
+        code: verificationCode,
       });
     } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
+      console.error('Failed to send verification code:', emailError);
       // Continue with registration even if email fails
     }
 

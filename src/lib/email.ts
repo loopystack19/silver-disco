@@ -116,3 +116,86 @@ export async function sendResendVerificationEmail({
 }: SendResendVerificationEmailParams): Promise<void> {
   return sendVerificationEmail({ to, name, token });
 }
+
+interface SendVerificationCodeParams {
+  to: string;
+  name: string;
+  code: string;
+}
+
+export async function sendVerificationCode({
+  to,
+  name,
+  code,
+}: SendVerificationCodeParams): Promise<void> {
+  const mailOptions = {
+    from: '"UmojaHub" <noreply@umojahub.com>',
+    to,
+    subject: 'UmojaHub Email Verification',
+    html: `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your Email</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 40px 40px 20px; text-align: center;">
+                    <h1 style="margin: 0; color: #16a34a; font-size: 28px;">UmojaHub</h1>
+                  </td>
+                </tr>
+                
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 20px 40px;">
+                    <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px;">Hello ${name},</h2>
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.5;">
+                      Welcome to UmojaHub!
+                    </p>
+                    <p style="margin: 0 0 30px; color: #666666; font-size: 16px; line-height: 1.5;">
+                      Your verification code is:
+                    </p>
+                    
+                    <!-- Verification Code Display -->
+                    <div style="background-color: #f8f9fa; border: 2px dashed #16a34a; border-radius: 8px; padding: 30px; text-align: center; margin: 0 0 30px;">
+                      <div style="font-size: 36px; font-weight: bold; color: #16a34a; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                        ${code}
+                      </div>
+                    </div>
+                    
+                    <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.5;">
+                      Enter this code on the verification page to activate your account.
+                    </p>
+                    
+                    <p style="margin: 0 0 0; color: #999999; font-size: 14px; line-height: 1.5;">
+                      This code will expire in 10 minutes.
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="padding: 20px 40px 40px; border-top: 1px solid #eeeeee;">
+                    <p style="margin: 0; color: #999999; font-size: 14px; line-height: 1.5;">
+                      If you didn't request this code, you can safely ignore this email.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}

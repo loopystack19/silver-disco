@@ -13,11 +13,15 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   
-  // Email verification (replaces document-based verification)
+  // Email verification with numeric code
   isVerified: boolean;
-  verificationToken?: string;
-  verificationTokenExpiry?: Date;
+  verificationCode?: string; // 5-digit numeric code
+  codeGeneratedAt?: Date; // For 10-minute expiration
   verifiedAt?: Date;
+  
+  // Rate limiting for resend
+  resendAttempts?: number; // Count of resend attempts
+  lastResendAt?: Date; // Timestamp of last resend
   
   // Student-specific fields
   enrolledCourses?: string[];
