@@ -2,16 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import VerifiedBadge from '@/components/common/VerifiedBadge';
+import MpesaPaymentModal from '@/components/marketplace/MpesaPaymentModal';
 import { CropListing, User } from '@/types/user';
 
 export default function MarketplacePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [listings, setListings] = useState<CropListing[]>([]);
   const [filteredListings, setFilteredListings] = useState<CropListing[]>([]);
   const [loading, setLoading] = useState(true);
   const [farmers, setFarmers] = useState<Map<string, User>>(new Map());
-  
+
+  // M-Pesa payment modal state
+  const [selectedListing, setSelectedListing] = useState<CropListing | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
@@ -147,8 +154,22 @@ export default function MarketplacePage() {
     alert(`Contact ${listing.farmerName} for ${listing.cropName}\n\nThis is a demo feature. In production, this would open a contact form or messaging system.`);
   };
 
-  const handleBuy = (listing: CropListing) => {
-    alert(`Initiating purchase for ${listing.quantity} ${listing.unit} of ${listing.cropName}\n\nTotal: KSh ${(listing.quantity * listing.pricePerUnit).toLocaleString()}\n\nThis is a demo feature. In production, this would process the transaction.`);
+  const handleBuyWithMpesa = (listing: CropListing) => {
+    // Check if user is logged in
+    if (!session) {
+      alert('Please log in to make a purchase');
+      router.push('/login');
+      return;
+    }
+
+    // Open M-Pesa payment modal
+    setSelectedListing(listing);
+    setShowPaymentModal(true);
+  };
+
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setSelectedListing(null);
   };
 
   if (loading) {
@@ -380,14 +401,26 @@ export default function MarketplacePage() {
                         onClick={() => handleContactSeller(listing)}
                         className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold"
                       >
-                        Contact Seller
+                        Contact
                       </button>
-                      {listing.status === 'available' && (
+                      {listing.status === 'available' && isVerified && (
                         <button
-                          onClick={() => handleBuy(listing)}
-                          className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold"
+                          onClick={() => handleBuyWithMpesa(listing)}
+                          className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-semibold flex items-center justify-center gap-1"
                         >
-                          Buy Now
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                          </svg>
+                          M-Pesa
+                        </button>
+                      )}
+                      {listing.status === 'available' && !isVerified && (
+                        <button
+                          disabled
+                          className="flex-1 px-4 py-2 bg-gray-300 text-gray-500 rounded-lg cursor-not-allowed text-sm font-semibold"
+                          title="Farmer not verified"
+                        >
+                          Unavailable
                         </button>
                       )}
                     </div>
@@ -407,6 +440,17 @@ export default function MarketplacePage() {
           </p>
         </div>
       </footer>
+
+      {/* M-Pesa Payment Modal */}
+      {selectedListing && (
+        <MpesaPaymentModal
+          listing={selectedListing}
+          farmerName={selectedListing.farmerName}
+          farmerLocation={selectedListing.location}
+          isOpen={showPaymentModal}
+          onClose={handleClosePaymentModal}
+        />
+      )}
     </div>
   );
 }

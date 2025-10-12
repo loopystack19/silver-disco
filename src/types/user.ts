@@ -272,6 +272,26 @@ export interface JobApplication {
   reviewNotes?: string;
 }
 
+// ===== M-PESA PAYMENT TYPES =====
+
+export type TransactionStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
+
+export interface Transaction {
+  id: string;
+  listingId: string;
+  farmerId: string;
+  buyerId: string;
+  buyerPhone: string;
+  amount: number;
+  quantity: number;
+  status: TransactionStatus;
+  timestamp: string;
+  checkoutRequestId: string;
+  merchantRequestId: string;
+  mpesaReceiptNumber?: string | null;
+  updatedAt?: string;
+}
+
 export interface Database {
   users: User[];
   cropListings: CropListing[];
@@ -283,4 +303,5 @@ export interface Database {
   lecturerVerifications: LecturerVerification[];
   jobListings: JobListing[];
   jobApplications: JobApplication[];
+  transactions: Transaction[];
 }
