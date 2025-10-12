@@ -7,21 +7,37 @@ import { useState, useEffect } from 'react';
 
 interface Enrollment {
   id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
   courseId: string;
   courseTitle: string;
-  progress: number;
-  completedLessons: string[];
-  completed: boolean;
+  courseProvider: string;
+  courseImage: string;
+  status: string;
+  progressPercent: number;
+  lessonsCompleted: number;
+  totalLessons: number;
+  lessonProgress: Record<string, any>;
+  enrolledAt: string;
+  lastAccessedAt: string;
+  completedAt?: string;
 }
 
 interface Course {
   id: string;
   title: string;
-  category: string;
-  level: string;
+  shortDescription: string;
+  provider: { name: string; url: string };
+  instructors: string[];
   duration: string;
+  level: string;
+  categories: string[];
+  tags: string[];
+  image: string;
   enrollmentCount: number;
   rating: number;
+  certificate: boolean;
 }
 
 export default function LearnersPage() {
@@ -37,18 +53,18 @@ export default function LearnersPage() {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch enrollments
-      const enrollmentResponse = await fetch('/api/enrollments');
+      // Fetch enrollments from new API
+      const enrollmentResponse = await fetch('/api/learn/enroll');
       const enrollmentData = await enrollmentResponse.json();
       if (enrollmentData.success) {
         setEnrollments(enrollmentData.enrollments);
       }
 
-      // Fetch recommended courses
-      const coursesResponse = await fetch('/api/courses?limit=3');
+      // Fetch recommended courses from new API
+      const coursesResponse = await fetch('/api/learn/courses?limit=3&sortBy=rating');
       const coursesData = await coursesResponse.json();
       if (coursesData.success) {
-        setRecommendedCourses(coursesData.courses.slice(0, 3));
+        setRecommendedCourses(coursesData.data.slice(0, 3));
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -57,10 +73,10 @@ export default function LearnersPage() {
     }
   };
 
-  const inProgressCourses = enrollments.filter(e => !e.completed && e.progress > 0);
-  const completedCourses = enrollments.filter(e => e.completed);
+  const inProgressCourses = enrollments.filter(e => e.status === 'active' && e.progressPercent > 0 && e.progressPercent < 100);
+  const completedCourses = enrollments.filter(e => e.status === 'completed' || e.progressPercent === 100);
   const totalProgress = enrollments.length > 0
-    ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length)
+    ? Math.round(enrollments.reduce((sum, e) => sum + e.progressPercent, 0) / enrollments.length)
     : 0;
 
   if (loading) {
@@ -140,23 +156,29 @@ export default function LearnersPage() {
                 <div
                   key={enrollment.id}
                   className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-                  onClick={() => router.push(`/dashboard/learners/learn/${enrollment.id}`)}
+                  onClick={() => router.push(`/learn/courses/${enrollment.courseId}`)}
                 >
-                  <div className="h-32 bg-gradient-to-br from-[#007F4E] to-[#005A36] flex items-center justify-center">
+                  <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
                     <PlayCircle className="w-12 h-12 text-white" />
                   </div>
                   <div className="p-4">
-                    <h3 className="font-bold text-gray-900 mb-2">{enrollment.courseTitle}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs text-gray-500">{enrollment.courseProvider}</span>
+                    </div>
+                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{enrollment.courseTitle}</h3>
                     <div className="flex items-center justify-between text-sm mb-2">
                       <span className="text-gray-600">Progress</span>
-                      <span className="font-semibold text-[#007F4E]">{enrollment.progress}%</span>
+                      <span className="font-semibold text-blue-600">{enrollment.progressPercent}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                       <div
-                        className="bg-[#007F4E] h-2 rounded-full transition-all"
-                        style={{ width: `${enrollment.progress}%` }}
+                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        style={{ width: `${enrollment.progressPercent}%` }}
                       ></div>
                     </div>
+                    <p className="text-xs text-gray-500">
+                      {enrollment.lessonsCompleted} of {enrollment.totalLessons} lessons completed
+                    </p>
                   </div>
                 </div>
               ))}
@@ -167,17 +189,17 @@ export default function LearnersPage() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <button
-            onClick={() => router.push('/dashboard/learners/courses')}
+            onClick={() => router.push('/learn')}
             className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
           >
-            <div className="w-12 h-12 bg-[#007F4E] rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
               <BookOpen className="w-6 h-6 text-white" />
             </div>
             <h3 className="font-bold text-gray-900 mb-2">Browse Courses</h3>
             <p className="text-sm text-gray-600 mb-4">
-              Explore our catalog of courses
+              Explore courses from Harvard, Stanford, MIT & more
             </p>
-            <div className="flex items-center text-[#007F4E] font-medium">
+            <div className="flex items-center text-blue-600 font-medium">
               View All <ArrowRight className="w-4 h-4 ml-1" />
             </div>
           </button>
@@ -186,14 +208,14 @@ export default function LearnersPage() {
             onClick={() => router.push('/dashboard/learners/certificates')}
             className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
           >
-            <div className="w-12 h-12 bg-[#FFC107] rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mb-4">
               <Award className="w-6 h-6 text-white" />
             </div>
             <h3 className="font-bold text-gray-900 mb-2">My Certificates</h3>
             <p className="text-sm text-gray-600 mb-4">
               View your earned certificates
             </p>
-            <div className="flex items-center text-[#007F4E] font-medium">
+            <div className="flex items-center text-blue-600 font-medium">
               View All <ArrowRight className="w-4 h-4 ml-1" />
             </div>
           </button>
@@ -202,14 +224,14 @@ export default function LearnersPage() {
             onClick={() => router.push('/')}
             className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow text-left"
           >
-            <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center mb-4">
               <Clock className="w-6 h-6 text-white" />
             </div>
             <h3 className="font-bold text-gray-900 mb-2">Back to Home</h3>
             <p className="text-sm text-gray-600 mb-4">
               Return to the main dashboard
             </p>
-            <div className="flex items-center text-[#007F4E] font-medium">
+            <div className="flex items-center text-blue-600 font-medium">
               Go Home <ArrowRight className="w-4 h-4 ml-1" />
             </div>
           </button>
@@ -221,8 +243,8 @@ export default function LearnersPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-gray-900">Recommended for You</h2>
               <button
-                onClick={() => router.push('/dashboard/learners/courses')}
-                className="text-[#007F4E] hover:underline font-medium"
+                onClick={() => router.push('/learn')}
+                className="text-blue-600 hover:underline font-medium"
               >
                 View All
               </button>
@@ -231,22 +253,31 @@ export default function LearnersPage() {
               {recommendedCourses.map((course) => (
                 <div
                   key={course.id}
-                  className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden cursor-pointer"
-                  onClick={() => router.push(`/dashboard/learners/courses/${course.id}`)}
+                  className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all overflow-hidden cursor-pointer group"
+                  onClick={() => router.push(`/learn/courses/${course.id}`)}
                 >
-                  <div className="h-32 bg-gradient-to-br from-[#007F4E] to-[#005A36] flex items-center justify-center">
+                  <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
                     <BookOpen className="w-12 h-12 text-white opacity-50" />
+                    {course.certificate && (
+                      <div className="absolute top-3 right-3">
+                        <div className="bg-yellow-400 text-gray-900 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                          <Award className="w-3 h-3" />
+                          Certificate
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="p-4">
-                    <div className="flex gap-2 mb-2">
-                      <span className="px-2 py-1 bg-[#FFC107] text-gray-900 text-xs font-semibold rounded">
-                        {course.category}
-                      </span>
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
                         {course.level}
                       </span>
+                      <span className="text-xs text-gray-500">{course.provider.name}</span>
                     </div>
-                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
+                    <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition">
+                      {course.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">{course.shortDescription}</p>
                     <div className="flex items-center justify-between text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
@@ -254,11 +285,11 @@ export default function LearnersPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="w-4 h-4" />
-                        <span>{course.enrollmentCount}</span>
+                        <span>{(course.enrollmentCount / 1000).toFixed(1)}K</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-[#FFC107] text-[#FFC107]" />
-                        <span>{course.rating}</span>
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span>{course.rating.toFixed(1)}</span>
                       </div>
                     </div>
                   </div>

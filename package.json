@@ -21,10 +21,13 @@
     "type-check": "tsc --noEmit",
     "seed": "ts-node -P tsconfig.seed.json scripts/seed-demo-data.ts",
     "seed:courses": "ts-node -P tsconfig.seed.json scripts/seed-courses.ts",
-    "seed:projects": "ts-node -P tsconfig.seed.json scripts/seed-projects.ts"
+    "seed:projects": "ts-node -P tsconfig.seed.json scripts/seed-projects.ts",
+    "seed:realcourses": "ts-node -P tsconfig.seed.json scripts/seed-real-courses.ts",
+    "seed:employment": "ts-node -P tsconfig.seed.json scripts/seed-employment-projects.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "jspdf": "^3.0.3",
     "lowdb": "^7.0.1",
     "lucide-react": "^0.544.0",
     "next": "^15.5.4",
