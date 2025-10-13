@@ -1,4 +1,4 @@
-export type UserRole = 'farmer' | 'student' | 'learner' | 'buyer' | 'admin';
+export type UserRole = 'farmer' | 'student' | 'learner' | 'buyer' | 'admin' | 'lecturer';
 
 export interface User {
   id: string;
@@ -292,6 +292,79 @@ export interface Transaction {
   updatedAt?: string;
 }
 
+// ===== BUYERS HUB TYPES =====
+
+export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'completed' | 'cancelled';
+
+export interface DeliveryDetails {
+  name: string;
+  phone: string;
+  county: string;
+  subCounty?: string;
+  address?: string;
+  instructions?: string;
+}
+
+export interface Order {
+  id: string;
+  buyerId: string;
+  buyerName: string;
+  buyerEmail: string;
+  farmerId: string;
+  farmerName: string;
+  listingId: string;
+  cropName: string;
+  quantity: number;
+  unit: string;
+  pricePerUnit: number;
+  totalAmount: number;
+  status: OrderStatus;
+  deliveryDetails: DeliveryDetails;
+  transactionId?: string;
+  mpesaReceiptNumber?: string;
+  placedAt: Date;
+  confirmedAt?: Date;
+  shippedAt?: Date;
+  completedAt?: Date;
+  cancelledAt?: Date;
+  cancellationReason?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Rating {
+  id: string;
+  orderId: string;
+  buyerId: string;
+  buyerName: string;
+  farmerId: string;
+  farmerName: string;
+  listingId: string;
+  cropName: string;
+  rating: number; // 1-5
+  comment?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Favorite {
+  id: string;
+  buyerId: string;
+  listingId: string;
+  cropName: string;
+  farmerName: string;
+  addedAt: Date;
+}
+
+export interface CartItem {
+  id: string;
+  buyerId: string;
+  listingId: string;
+  quantity: number;
+  addedAt: Date;
+  updatedAt: Date;
+}
+
 export interface Database {
   users: User[];
   cropListings: CropListing[];
@@ -304,4 +377,12 @@ export interface Database {
   jobListings: JobListing[];
   jobApplications: JobApplication[];
   transactions: Transaction[];
+  employmentProjects?: any[]; // Employment hub projects
+  employmentApplications?: any[]; // Employment hub applications
+  employmentTeams?: any[]; // Employment hub teams
+  applications?: any[]; // Employment applications (alias for employmentApplications)
+  orders: Order[]; // Buyers Hub
+  ratings: Rating[]; // Buyers Hub
+  favorites: Favorite[]; // Buyers Hub
+  cartItems: CartItem[]; // Buyers Hub
 }

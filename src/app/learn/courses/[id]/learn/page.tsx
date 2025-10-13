@@ -48,7 +48,7 @@ interface Enrollment {
 export default function LearnCoursePage({
   params,
 }: {
-  params: { courseId: string };
+  params: { id: string };
 }) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -60,16 +60,16 @@ export default function LearnCoursePage({
 
   useEffect(() => {
     if (!session) {
-      router.push(`/login?redirect=/learn/courses/${params.courseId}/learn`);
+      router.push(`/login?redirect=/learn/courses/${params.id}/learn`);
       return;
     }
     fetchCourseAndEnrollment();
-  }, [params.courseId, session]);
+  }, [params.id, session]);
 
   const fetchCourseAndEnrollment = async () => {
     try {
       // Fetch course
-      const courseRes = await fetch(`/api/learn/courses/${params.courseId}`);
+      const courseRes = await fetch(`/api/learn/courses/${params.id}`);
       const courseData = await courseRes.json();
 
       if (courseData.success) {
@@ -82,12 +82,12 @@ export default function LearnCoursePage({
 
       if (enrollData.success) {
         const userEnrollment = enrollData.enrollments.find(
-          (e: any) => e.courseId === params.courseId
+          (e: any) => e.courseId === params.id
         );
 
         if (!userEnrollment) {
           // Not enrolled, redirect to course detail page
-          router.push(`/learn/courses/${params.courseId}`);
+          router.push(`/learn/courses/${params.id}`);
           return;
         }
 
@@ -207,7 +207,7 @@ export default function LearnCoursePage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button
-              onClick={() => router.push(`/learn/courses/${params.courseId}`)}
+              onClick={() => router.push(`/learn/courses/${params.id}`)}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-4 h-4" />

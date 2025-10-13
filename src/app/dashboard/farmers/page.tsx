@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import VerifiedBadge from '@/components/common/VerifiedBadge';
 import { CropListing, User } from '@/types/user';
 
@@ -124,7 +125,7 @@ export default function FarmerDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-green-600">UmojaHub - Farmer Dashboard</h1>
+              <h1 className="text-2xl font-bold text-emerald-700">UmojaHub - Farmer Dashboard</h1>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm text-gray-600">{session.user.name}</span>
                 {farmer && <VerifiedBadge isVerified={farmer.isVerified} size="sm" />}
@@ -134,7 +135,7 @@ export default function FarmerDashboard() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => router.push('/dashboard/farmers/knowledge')}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -186,7 +187,7 @@ export default function FarmerDashboard() {
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-600 mb-1">Available</div>
-            <div className="text-3xl font-bold text-green-600">{stats.verified}</div>
+            <div className="text-3xl font-bold text-emerald-700">{stats.verified}</div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
             <div className="text-sm text-gray-600 mb-1">Sold</div>
@@ -211,7 +212,7 @@ export default function FarmerDashboard() {
             disabled={!farmer?.isVerified}
             className={`px-6 py-3 rounded-lg font-semibold transition ${
               farmer?.isVerified
-                ? 'bg-green-600 text-white hover:bg-green-700'
+                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
@@ -237,14 +238,16 @@ export default function FarmerDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {listings.map((listing) => (
                   <div key={listing.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition">
-                    <img
-                      src={listing.image}
-                      alt={listing.cropName}
-                      className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/farmers/default-crop.jpg';
-                      }}
-                    />
+                    <div className="relative w-full h-48">
+                      <Image
+                        src={listing.image || '/images/farming/maize.jpg'}
+                        alt={listing.cropName}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        loading="lazy"
+                      />
+                    </div>
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">{listing.cropName}</h3>
@@ -261,7 +264,7 @@ export default function FarmerDashboard() {
                         </span>
                       </div>
                       <div className="text-sm text-gray-600 mb-2">
-                        <p className="font-semibold text-green-600">KSh {listing.pricePerUnit.toLocaleString()} per {listing.unit}</p>
+                        <p className="font-semibold text-emerald-700">KSh {listing.pricePerUnit.toLocaleString()} per {listing.unit}</p>
                         <p>Quantity: {listing.quantity} {listing.unit}</p>
                         <p>Location: {listing.location}</p>
                       </div>
@@ -284,7 +287,7 @@ export default function FarmerDashboard() {
                         {listing.status === 'sold' && (
                           <button
                             onClick={() => handleStatusChange(listing.id, 'available')}
-                            className="flex-1 px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+                            className="flex-1 px-3 py-2 bg-emerald-600 text-white text-sm rounded hover:bg-emerald-700 transition"
                           >
                             Reactivate
                           </button>
@@ -493,7 +496,7 @@ function ListingModal({
                 required
                 value={formData.cropName}
                 onChange={(e) => setFormData({ ...formData, cropName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
                 placeholder="e.g., Maize, Tomatoes, Beans"
               />
             </div>
@@ -510,7 +513,7 @@ function ListingModal({
                   step="0.01"
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
               <div>
@@ -521,7 +524,7 @@ function ListingModal({
                   required
                   value={formData.unit}
                   onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
                 >
                   {units.map((unit) => (
                     <option key={unit} value={unit}>
@@ -543,7 +546,7 @@ function ListingModal({
                 step="0.01"
                 value={formData.pricePerUnit}
                 onChange={(e) => setFormData({ ...formData, pricePerUnit: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
                 placeholder="e.g., 3500"
               />
             </div>
@@ -556,7 +559,7 @@ function ListingModal({
                 required
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select County</option>
                 {kenyanCounties.map((county) => (
@@ -576,7 +579,7 @@ function ListingModal({
                 rows={4}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500"
                 placeholder="Describe your crop, quality, delivery options, etc."
               />
             </div>
@@ -590,10 +593,11 @@ function ListingModal({
               {imagePreview ? (
                 <div className="space-y-3">
                   <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-300">
-                    <img
+                    <Image
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                     <button
                       type="button"
@@ -650,7 +654,7 @@ function ListingModal({
                       />
                     </svg>
                     <p className="text-sm text-gray-600 mb-1">
-                      <span className="font-semibold text-green-600">Click to upload</span> or drag
+                      <span className="font-semibold text-emerald-700">Click to upload</span> or drag
                       and drop
                     </p>
                     <p className="text-xs text-gray-500">
@@ -672,7 +676,7 @@ function ListingModal({
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition disabled:bg-gray-400"
+                className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:bg-gray-400"
               >
                 {submitting ? 'Saving...' : listing ? 'Update Listing' : 'Create Listing'}
               </button>

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
 import { getDb } from '@/lib/db';
 import { Project, ProjectFilters } from '@/types/employment';
 
@@ -123,7 +124,24 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add authentication check for lecturer role
+    // Check authentication and lecturer role
+    const session = await getServerSession();
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized. Please log in.' },
+        { status: 401 }
+      );
+    }
+
+    const user = session.user as any;
+    if (user.role !== 'lecturer' && user.role !== 'admin') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden. Only lecturers can create projects.' },
+        { status: 403 }
+      );
+    }
+
     const projectData = await request.json();
 
     const db = await getDb();

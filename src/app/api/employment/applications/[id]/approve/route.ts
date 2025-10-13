@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/db';
+import { sendEmail } from '@/lib/email';
 import { Approval, TeamMember } from '@/types/employment';
 
 /**
@@ -145,7 +146,71 @@ export async function POST(
 
     await db.write();
 
-    // TODO: Send email notification to student
+    // Send email notification to student
+    try {
+      const student = db.data.users.find((u: any) => u.id === application.studentId);
+      const project = db.data.employmentProjects?.find(
+        (p: any) => p.id === application.projectId
+      );
+
+      if (student && project) {
+        let emailSubject = '';
+        let emailText = '';
+        let emailHtml = '';
+
+        if (decision === 'approved') {
+          emailSubject = `Application Approved: ${project.title}`;
+          emailText = `Dear ${student.name},\n\nCongratulations! Your application for "${project.title}" has been approved.\n\nYou have been added to the project team. Please check the Employment Hub dashboard to view project details and milestones.\n\nBest regards,\nUmoja Hub Team`;
+          emailHtml = `
+            <h2>Application Approved! 🎉</h2>
+            <p>Dear ${student.name},</p>
+            <p>Congratulations! Your application for <strong>"${project.title}"</strong> has been approved.</p>
+            <h3>Next Steps:</h3>
+            <ul>
+              <li>You have been added to the project team</li>
+              <li>Check the Employment Hub dashboard to view project details</li>
+              <li>Review project milestones and deliverables</li>
+              <li>Connect with your team members</li>
+            </ul>
+            ${feedback ? `<p><strong>Lecturer's Note:</strong> ${feedback}</p>` : ''}
+            <p>Best regards,<br/>Umoja Hub Team</p>
+          `;
+        } else if (decision === 'rejected') {
+          emailSubject = `Application Update: ${project.title}`;
+          emailText = `Dear ${student.name},\n\nThank you for your interest in "${project.title}".\n\nUnfortunately, your application was not selected at this time. We encourage you to apply for other projects that match your skills and interests.\n\n${feedback ? `Feedback: ${feedback}\n\n` : ''}Best regards,\nUmoja Hub Team`;
+          emailHtml = `
+            <h2>Application Update</h2>
+            <p>Dear ${student.name},</p>
+            <p>Thank you for your interest in <strong>"${project.title}"</strong>.</p>
+            <p>Unfortunately, your application was not selected at this time. We encourage you to apply for other projects that match your skills and interests.</p>
+            ${feedback ? `<h3>Feedback:</h3><p>${feedback}</p>` : ''}
+            <p>Best regards,<br/>Umoja Hub Team</p>
+          `;
+        } else if (decision === 'revision-requested') {
+          emailSubject = `Revision Requested: ${project.title}`;
+          emailText = `Dear ${student.name},\n\nThank you for your application to "${project.title}".\n\nThe lecturer has requested revisions to your application. Please review the feedback below and resubmit your application.\n\nFeedback: ${feedback || 'Please review and improve your application.'}\n\nBest regards,\nUmoja Hub Team`;
+          emailHtml = `
+            <h2>Revision Requested</h2>
+            <p>Dear ${student.name},</p>
+            <p>Thank you for your application to <strong>"${project.title}"</strong>.</p>
+            <p>The lecturer has requested revisions to your application. Please review the feedback below and resubmit your application.</p>
+            <h3>Feedback:</h3>
+            <p>${feedback || 'Please review and improve your application.'}</p>
+            <p>Best regards,<br/>Umoja Hub Team</p>
+          `;
+        }
+
+        await sendEmail({
+          to: student.email,
+          subject: emailSubject,
+          text: emailText,
+          html: emailHtml
+        });
+      }
+    } catch (emailError) {
+      console.error('Failed to send approval notification email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json({
       success: true,

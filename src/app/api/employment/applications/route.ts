@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '@/lib/db';
+import { sendEmail } from '@/lib/email';
 import { Application } from '@/types/employment';
 
 /**
@@ -93,10 +94,59 @@ export async function POST(request: NextRequest) {
     db.data.applications = db.data.applications || [];
     db.data.applications.push(application);
 
-    // Create notification for lecturer
-    // TODO: Implement email notification
-
     await db.write();
+
+    // Send email notification to student confirming application
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: `Application Submitted: ${project.title}`,
+        text: `Dear ${user.name},\n\nYour application for the project "${project.title}" has been successfully submitted.\n\nApplication Details:\n- Project: ${project.title}\n- Organization: ${project.organization}\n- Submitted: ${new Date().toLocaleDateString()}\n\nYou will be notified once your application is reviewed.\n\nBest regards,\nUmoja Hub Team`,
+        html: `
+          <h2>Application Submitted Successfully</h2>
+          <p>Dear ${user.name},</p>
+          <p>Your application for the project <strong>"${project.title}"</strong> has been successfully submitted.</p>
+          <h3>Application Details:</h3>
+          <ul>
+            <li><strong>Project:</strong> ${project.title}</li>
+            <li><strong>Organization:</strong> ${project.organization}</li>
+            <li><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</li>
+          </ul>
+          <p>You will be notified once your application is reviewed.</p>
+          <p>Best regards,<br/>Umoja Hub Team</p>
+        `
+      });
+    } catch (emailError) {
+      console.error('Failed to send confirmation email:', emailError);
+      // Don't fail the request if email fails
+    }
+
+    // Notify all lecturers about new application
+    try {
+      const lecturers = db.data.users.filter((u: any) => u.role === 'lecturer' || u.role === 'admin');
+      for (const lecturer of lecturers) {
+        await sendEmail({
+          to: lecturer.email,
+          subject: `New Project Application: ${project.title}`,
+          text: `A new application has been submitted for the project "${project.title}".\n\nApplicant: ${user.name}\nInstitution: ${applicationData.institution}\nCourse: ${applicationData.course}\n\nPlease review the application in the Employment Hub dashboard.`,
+          html: `
+            <h2>New Project Application</h2>
+            <p>A new application has been submitted for the project <strong>"${project.title}"</strong>.</p>
+            <h3>Applicant Details:</h3>
+            <ul>
+              <li><strong>Name:</strong> ${user.name}</li>
+              <li><strong>Email:</strong> ${user.email}</li>
+              <li><strong>Institution:</strong> ${applicationData.institution}</li>
+              <li><strong>Course:</strong> ${applicationData.course}</li>
+            </ul>
+            <p>Please review the application in the Employment Hub dashboard.</p>
+          `
+        });
+      }
+    } catch (emailError) {
+      console.error('Failed to send lecturer notification email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     return NextResponse.json({
       success: true,

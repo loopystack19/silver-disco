@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Article {
   id: string;
@@ -124,7 +125,7 @@ export default function KnowledgeHubPage() {
             <div>
               <Link
                 href="/dashboard/farmers"
-                className="text-sm text-green-600 hover:text-green-700 mb-2 inline-flex items-center"
+                className="text-sm text-emerald-700 hover:text-green-700 mb-2 inline-flex items-center"
               >
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -136,7 +137,7 @@ export default function KnowledgeHubPage() {
             </div>
             <Link
               href="/dashboard/farmers/knowledge/chat"
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -166,7 +167,7 @@ export default function KnowledgeHubPage() {
                     placeholder="Search articles..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                   />
                   <svg
                     className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -189,7 +190,7 @@ export default function KnowledgeHubPage() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 >
                   {CATEGORIES.map((category) => (
                     <option key={category} value={category}>
@@ -210,7 +211,7 @@ export default function KnowledgeHubPage() {
             {selectedCategory !== 'All' && (
               <span>
                 {' '}
-                in <span className="font-semibold text-green-600">{selectedCategory}</span>
+                in <span className="font-semibold text-emerald-700">{selectedCategory}</span>
               </span>
             )}
           </p>
@@ -242,14 +243,16 @@ export default function KnowledgeHubPage() {
                 key={article.id}
                 className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <img
-                  src={article.image}
-                  alt={article.title}
-                  className="w-full h-48 object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/knowledge/sustainable-farming.jpg';
-                  }}
-                />
+                <div className="relative w-full h-48">
+                  <Image
+                    src={article.image || '/images/knowledge/sustainable-farming.jpg'}
+                    alt={article.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    loading="lazy"
+                  />
+                </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
                     <span className="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded">
@@ -263,7 +266,7 @@ export default function KnowledgeHubPage() {
                     <span className="text-xs text-gray-500">{article.source}</span>
                     <button
                       onClick={() => setSelectedArticle(article)}
-                      className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
+                      className="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition"
                     >
                       Read More
                     </button>
@@ -324,14 +327,15 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
           </div>
 
           {/* Image */}
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-64 object-cover rounded-lg mb-6"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = '/images/knowledge/sustainable-farming.jpg';
-            }}
-          />
+          <div className="relative w-full h-64 rounded-lg overflow-hidden mb-6">
+            <Image
+              src={article.image || '/images/knowledge/sustainable-farming.jpg'}
+              alt={article.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
 
           {/* Content */}
           <div className="prose max-w-none mb-6">
@@ -350,7 +354,7 @@ function ArticleModal({ article, onClose }: { article: Article; onClose: () => v
             </a>
             <button
               onClick={handleAskChatbot}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
             >
               Ask Chatbot About This
             </button>

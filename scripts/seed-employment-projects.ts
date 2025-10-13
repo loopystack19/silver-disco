@@ -103,7 +103,7 @@ async function seedEmploymentProjects() {
   console.log('──────────────────────────────────────\n');
   console.log('🎯 Next Steps:');
   console.log('   1. Run: npm run dev');
-  console.log('   2. Visit: http://localhost:3001/employment');
+  console.log('   2. Visit: http://localhost:3000/employment');
   console.log('   3. Browse projects and start applying!\n');
 }
 

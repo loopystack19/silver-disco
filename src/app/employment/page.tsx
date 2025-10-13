@@ -115,9 +115,9 @@ export default function EmploymentPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h1 className="text-5xl font-bold mb-4">Employment Hub</h1>
-          <p className="text-xl mb-8 text-purple-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Employment Hub</h1>
+          <p className="text-base sm:text-lg lg:text-xl mb-8 text-purple-100">
             Gain real-world experience through verified projects. Connect with lecturers, build your portfolio, and launch your career.
           </p>
 
@@ -136,27 +136,27 @@ export default function EmploymentPage() {
           </form>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mt-8 sm:mt-12">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Briefcase className="w-6 h-6" />
-                <span className="text-3xl font-bold">{projects.length}+</span>
+                <Briefcase className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="text-2xl sm:text-3xl font-bold">{projects.length}+</span>
               </div>
-              <p className="text-purple-100">Real Projects</p>
+              <p className="text-purple-100 text-sm sm:text-base">Real Projects</p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Users className="w-6 h-6" />
-                <span className="text-3xl font-bold">500+</span>
+                <Users className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="text-2xl sm:text-3xl font-bold">500+</span>
               </div>
-              <p className="text-purple-100">Students</p>
+              <p className="text-purple-100 text-sm sm:text-base">Students</p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <Award className="w-6 h-6" />
-                <span className="text-3xl font-bold">100+</span>
+                <Award className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="text-2xl sm:text-3xl font-bold">100+</span>
               </div>
-              <p className="text-purple-100">Verified Projects</p>
+              <p className="text-purple-100 text-sm sm:text-base">Verified Projects</p>
             </div>
           </div>
         </div>
