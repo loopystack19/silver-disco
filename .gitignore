@@ -46,3 +46,10 @@ db.json
 *.swp
 *.swo
 *~
+*.md 
+
+# Ignore all markdown files
+*.md
+
+# EXCEPT this one
+!README.md
