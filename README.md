@@ -1,214 +1,252 @@
-# 🌍 UmojaHub  
-### An AI-Assisted, Offline-First Platform for Education, Employment & Food Security
+# UmojaHub
+
+UmojaHub is a full stack web platform designed to address three deeply connected challenges in third world countries.
+
+- Food insecurity  
+- Limited access to education  
+- Youth unemployment  
+
+The platform unifies these problem areas into a single digital ecosystem.
 
 ---
 
-<p align="center">
-  <img src="./umoja-hub.png" alt="UmojaHub platform overview" width="800" />
-</p>
+## Problem Space
 
+Many communities face the same structural gaps.
 
-## 📌 Overview
+- Small scale farmers lack direct access to buyers  
+- Learners gain skills with no clear path to income  
+- Job seekers struggle to prove ability beyond certificates  
+- Existing solutions operate in isolation  
 
-**UmojaHub** is a full-stack experimental platform built to explore how **AI can be used as training wheels** to design, validate, and ship a complex, real-world system.
+This fragmentation limits real impact.
 
-This project is featured on my CV as evidence of:
-
-- End-to-end product thinking  
-- Full-stack engineering capability  
-- Responsible and intentional use of AI  
-- Designing for low-bandwidth and offline environments  
-
-> **Guiding Principle**  
-> AI accelerated learning and iteration — it did **not** replace understanding or decision-making.
+You cannot fix food insecurity without income.  
+You cannot fix unemployment without skills.  
+You cannot fix skills without access.
 
 ---
 
-## 🎯 Problem Space
+## The UmojaHub Approach
 
-UmojaHub targets three interconnected challenges commonly found in emerging economies:
+UmojaHub treats these challenges as one system.
 
-### 🌾 Food Security
-- Smallholder farmers lack market access and trust
-- Buyer–seller relationships are informal and unverified
+- One platform  
+- One user profile  
+- Multiple economic pathways  
 
-### 🎓 Education & Skills
-- Skills training is fragmented and often disconnected from employment
-- Certificates lack verification and real signaling power
+A user’s actions in one area strengthen outcomes in another.
 
-### 💼 Employment
-- Job platforms rarely reflect actual skills and projects
-- Learners struggle to translate learning into opportunities
+Examples.
 
----
+- A learner earns skills and certificates  
+- Skills appear on their profile  
+- Employers and project owners can verify them  
+- Farmers earn income and build reputation through verified sales  
 
-## 💡 Solution Summary
-
-UmojaHub integrates these challenges into **one cohesive platform** made up of three hubs:
-
-
-
-
-Each hub reinforces the others through shared data, verification, and user profiles.
+Everything compounds.
 
 ---
 
-## 🧩 Platform Architecture
+## Platform Architecture
 
-### 🌾 Food Security Hub (Farmers & Buyers)
-- Farmer crop marketplace
-- Farmer identity verification system
-- Verified farmer badges
-- Buyer discovery & contact flows
-- Sales and inventory tracking
-- Trust-first design with audit logs
+UmojaHub is built as a modular system.
+
+Each hub solves a specific problem.  
+All hubs share users, data, and trust signals.
 
 ---
 
-### 🎓 Education Hub (Learners)
-- Course catalog with structured modules
-- Enrollment and progress tracking
-- Offline-accessible lessons
-- Certificate generation with verification IDs
-- Skill auto-mapping to user profiles
+## Core Modules
+
+### Food Security Hub
+
+Designed to support farmers and buyers.
+
+Farmer capabilities.
+
+- Create and manage crop listings  
+- Upload product images  
+- Receive and process orders  
+- Track order status from pending to completed  
+- Submit documents for verification  
+- Earn verified farmer badges  
+
+Buyer capabilities.
+
+- Browse verified farmers  
+- Filter by location, price, and availability  
+- Add items to cart  
+- Complete checkout using M-Pesa  
+- Track order history  
+- Rate completed orders  
+
+This creates trust and transparency in local food markets.
 
 ---
 
-### 💼 Employment Hub (Students & Employers)
-- Job board with search and filters
-- Job and project applications
-- Project collaboration workspace
-- AI-assisted CV optimization
-- Skill-aware applications (certificates boost visibility)
+### Education Hub
+
+Designed to convert learning into measurable value.
+
+Learner capabilities.
+
+- Browse and enroll in courses  
+- Learn through video, text, and quizzes  
+- Track progress with completion percentages  
+- Earn downloadable certificates  
+- Skills automatically attach to profile  
+
+Admin capabilities.
+
+- Create and manage courses  
+- Control publishing workflow  
+
+Learning outcomes are visible and reusable across the platform.
 
 ---
 
-## 🔗 Cross-Hub Integration (Key Design Focus)
+### Employment Hub
 
-A major learning objective was designing **meaningful data flows across modules**:
+Designed to bridge skills and opportunity.
 
-- 🎓 Certificates → strengthen 💼 job applications  
-- 🌾 Verified farmers → higher marketplace trust  
-- 🧠 Completed courses → auto-populated skills  
-- 👥 Projects → enhanced student profiles  
+User capabilities.
 
-This required careful handling of **data consistency, UX clarity, and role-based access**.
+- Browse and post jobs  
+- Apply using profile and certificates  
+- Track application status  
+- Join collaborative projects  
+- Match opportunities based on verified skills  
 
----
-
-## 🤖 AI Usage Philosophy
-
-AI was used **deliberately and transparently**.
-
-### ✅ Where AI Was Used
-- CV analysis and optimization (OpenAI API)
-- Feature ideation and validation
-- Debugging assistance and refactoring suggestions
-- Improving documentation and clarity
-
-### ❌ Where AI Was Not Used
-- Authentication and security logic
-- Database schema design
-- Offline synchronization strategies
-- Core architectural decisions
+Employers see proof.  
+Applicants show real work.
 
 ---
 
-## 🛠️ Technology Stack
+## Cross Platform Features
 
-### Frontend
-- **Next.js 13+ (App Router)**
-- **TypeScript**
-- **Tailwind CSS**
-- Responsive, mobile-first UI
-- Progressive Web App (PWA)
+Shared across all modules.
 
-### Backend
-- **Next.js API Routes**
-- **NextAuth.js** (JWT-based authentication)
-- **LowDB** (local-first MVP storage)
-- Planned migration path to **MongoDB Atlas**
+- Unified user profile  
+- Role based dashboards  
+- Verified badges  
+- Cross hub skill recommendations  
+- Secure authentication  
+- Route level access control  
 
-### AI & Integrations
-- **OpenAI API** (CV optimization & experimentation)
-- **Cloudinary** (file and image uploads)
-- **SendGrid / Mailgun** (email notifications – placeholder)
+No duplicated data.  
+No isolated workflows.
 
 ---
 
-## 📱 Offline-First & PWA Capabilities
+## User Roles
 
-Offline usability was a **first-class concern**, not an afterthought:
+Supported roles.
 
-- Offline course access
-- Draft job applications stored locally
-- Offline crop listing creation
-- Sync-on-reconnect logic
-- Conflict resolution via timestamps
-- Visual offline indicators
+- Farmer  
+- Buyer  
+- Student  
+- Learner  
+- Lecturer  
+- Admin  
 
-Designed specifically for **2G/3G network conditions**.
-
----
-
-## 🔐 Authentication, Roles & Security
-
-- Role-based access (Farmer, Student, Buyer, Admin)
-- Protected API routes
-- Password hashing with bcrypt
-- Admin audit logs for sensitive actions
-- Verification workflows with approval trails
+Each role has scoped permissions and a dedicated dashboard.
 
 ---
 
-## 🧑‍💼 Admin & Moderation Tools
+## Tech Stack
 
-- User management (search, suspend, verify)
-- Farmer verification review dashboards
-- Content moderation queues
-- Analytics and platform metrics
-- Full audit log viewer
+Frontend.
 
----
+- Next.js 15  
+- TypeScript  
+- Tailwind CSS  
 
-## 🧪 Testing & Quality Focus
+Backend.
 
-- End-to-end user journey testing
-- Cross-browser compatibility
-- Mobile responsiveness
-- Low-bandwidth simulation
-- Lighthouse audits (performance & accessibility)
+- Next.js API routes  
+- LowDB  
+- NextAuth.js  
+- bcrypt  
 
----
+Integrations.
 
-## 🎯 MVP Scope & Outcomes
+- M-Pesa payments  
+- Email verification  
+- File uploads  
 
-- Designed for **20 real test users**
-- Complete user journeys over isolated features
-- Balanced ambition with realistic delivery
-- Emphasis on iteration, learning, and clarity
+The stack prioritizes speed, simplicity, and iteration.
 
 ---
 
-## 📚 What This Project Demonstrates
+## Admin Capabilities
 
-✔ Full-stack system design  
-✔ Product-level thinking  
-✔ Ethical and effective AI usage  
-✔ Offline-first engineering  
-✔ Real-world constraints awareness  
-✔ Clear technical communication  
+Implemented.
 
----
+- User verification workflow  
+- Farmer approval and rejection  
+- Badge assignment  
+- Basic user management  
 
-## 🔮 Future Improvements
+In progress.
 
-- MongoDB migration
-- SMS & WhatsApp integrations
-- Real-time chat
-- Multilingual support (Swahili, French)
-- Mobile app version
-- Payment integration
+- Content moderation  
+- Analytics dashboards  
+- Audit logs  
+
+Admins act as trust enforcers across the system.
 
 ---
 
+## Project Status
+
+- MVP is approximately 75 percent complete  
+- All core hubs are functional  
+- Payments and order workflows work end to end  
+- Certificate generation is live  
+
+The focus has been real user flows over mock features.
+
+---
+
+## Roadmap
+
+Short term focus.
+
+- In app notifications  
+- Email notifications  
+- Admin analytics dashboard  
+- Content moderation tools  
+
+Mid term.
+
+- Offline support  
+- PWA setup  
+- Performance optimization  
+
+Long term.
+
+- End to end testing  
+- Accessibility improvements  
+- Scalability planning  
+
+---
+
+------
+
+## Screenshots
+
+### The farmers section on the landing page
+
+This view allows farmers to manage crop listings, track orders, and monitor verification status.
+
+![Farmers section on the landing page](./umoja-hub.png)
+---
+
+## Local Development
+
+Clone the repository.
+
+```bash
+https://github.com/loopystack19/silver-disco
+cd silver-disco
